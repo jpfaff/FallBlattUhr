@@ -1,0 +1,1000 @@
+   1               		.file	"fallblatt.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	USART_Transmit2
+  12               	USART_Transmit2:
+  13               	.LFB6:
+  14               		.file 1 "libraries/fallblatt/fallblatt.c"
+   1:libraries/fallblatt/fallblatt.c **** /*
+   2:libraries/fallblatt/fallblatt.c ****  * fallblatt.h
+   3:libraries/fallblatt/fallblatt.c ****  *
+   4:libraries/fallblatt/fallblatt.c ****  *  Created: 04.10.2016
+   5:libraries/fallblatt/fallblatt.c ****  *  Author: Jonas Pfaff
+   6:libraries/fallblatt/fallblatt.c ****  */
+   7:libraries/fallblatt/fallblatt.c **** 
+   8:libraries/fallblatt/fallblatt.c **** #define F_CPU 8000000UL
+   9:libraries/fallblatt/fallblatt.c **** #include "fallblatt.h"       
+  10:libraries/fallblatt/fallblatt.c **** #include <util/delay.h>
+  11:libraries/fallblatt/fallblatt.c **** 
+  12:libraries/fallblatt/fallblatt.c **** void USART_Transmit2( unsigned char data )
+  13:libraries/fallblatt/fallblatt.c **** {
+  15               		.loc 1 13 0
+  16               		.cfi_startproc
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+  21               	.LVL0:
+  22               	.L2:
+  14:libraries/fallblatt/fallblatt.c **** 	while(!(UCSR0A & (1<<UDRE0)));
+  23               		.loc 1 14 0 discriminator 1
+  24 0000 9091 C000 		lds r25,192
+  25 0004 95FF      		sbrs r25,5
+  26 0006 00C0      		rjmp .L2
+  15:libraries/fallblatt/fallblatt.c **** 	UDR0 = data;
+  27               		.loc 1 15 0
+  28 0008 8093 C600 		sts 198,r24
+  29 000c 0895      		ret
+  30               		.cfi_endproc
+  31               	.LFE6:
+  33               	.global	SendString2
+  35               	SendString2:
+  36               	.LFB7:
+  16:libraries/fallblatt/fallblatt.c **** }
+  17:libraries/fallblatt/fallblatt.c **** void SendString2(char *StringPtr)
+  18:libraries/fallblatt/fallblatt.c **** {
+  37               		.loc 1 18 0
+  38               		.cfi_startproc
+  39               	.LVL1:
+  40 000e CF93      		push r28
+  41               	.LCFI0:
+  42               		.cfi_def_cfa_offset 3
+  43               		.cfi_offset 28, -2
+  44 0010 DF93      		push r29
+  45               	.LCFI1:
+  46               		.cfi_def_cfa_offset 4
+  47               		.cfi_offset 29, -3
+  48               	/* prologue: function */
+  49               	/* frame size = 0 */
+  50               	/* stack size = 2 */
+  51               	.L__stack_usage = 2
+  52 0012 EC01      		movw r28,r24
+  53               	.LVL2:
+  54               	.L7:
+  19:libraries/fallblatt/fallblatt.c **** 	
+  20:libraries/fallblatt/fallblatt.c **** 	while(*StringPtr != 0x00)
+  55               		.loc 1 20 0
+  56 0014 8991      		ld r24,Y+
+  57               	.LVL3:
+  58 0016 8823      		tst r24
+  59 0018 01F0      		breq .L9
+  21:libraries/fallblatt/fallblatt.c **** 	{  
+  22:libraries/fallblatt/fallblatt.c **** 	USART_Transmit2(*StringPtr);    
+  60               		.loc 1 22 0
+  61 001a 0E94 0000 		call USART_Transmit2
+  62               	.LVL4:
+  63 001e 00C0      		rjmp .L7
+  64               	.LVL5:
+  65               	.L9:
+  66               	/* epilogue start */
+  23:libraries/fallblatt/fallblatt.c **** 	StringPtr++;
+  24:libraries/fallblatt/fallblatt.c **** 	}        
+  25:libraries/fallblatt/fallblatt.c **** 
+  26:libraries/fallblatt/fallblatt.c **** }
+  67               		.loc 1 26 0
+  68 0020 DF91      		pop r29
+  69 0022 CF91      		pop r28
+  70               	.LVL6:
+  71 0024 0895      		ret
+  72               		.cfi_endproc
+  73               	.LFE7:
+  75               	.global	fallblatt_init
+  77               	fallblatt_init:
+  78               	.LFB8:
+  27:libraries/fallblatt/fallblatt.c **** 
+  28:libraries/fallblatt/fallblatt.c **** void fallblatt_init(void)
+  29:libraries/fallblatt/fallblatt.c **** {
+  79               		.loc 1 29 0
+  80               		.cfi_startproc
+  81               	/* prologue: function */
+  82               	/* frame size = 0 */
+  83               	/* stack size = 0 */
+  84               	.L__stack_usage = 0
+  30:libraries/fallblatt/fallblatt.c ****     START_DDR |= START_PIN;   //START     out
+  85               		.loc 1 30 0
+  86 0026 389A      		sbi 0x7,0
+  31:libraries/fallblatt/fallblatt.c ****     ADL_DDR |= ADL_PIN;   //SET_ADL   out
+  87               		.loc 1 31 0
+  88 0028 399A      		sbi 0x7,1
+  32:libraries/fallblatt/fallblatt.c ****     ADCH_DDR |= ADCH_PIN;   //SET_ADCH  out
+  89               		.loc 1 32 0
+  90 002a 3A9A      		sbi 0x7,2
+  33:libraries/fallblatt/fallblatt.c ****     ADCM_DDR |= ADCM_PIN;   //SET_ADCM  out
+  91               		.loc 1 33 0
+  92 002c 3B9A      		sbi 0x7,3
+  34:libraries/fallblatt/fallblatt.c **** 
+  35:libraries/fallblatt/fallblatt.c ****     DATA0_DDR &= ~DATA0;  //PIN0..5   input with pull-up
+  93               		.loc 1 35 0
+  94 002e 5798      		cbi 0xa,7
+  36:libraries/fallblatt/fallblatt.c ****     DATA0_PORT |= DATA0;
+  95               		.loc 1 36 0
+  96 0030 5F9A      		sbi 0xb,7
+  37:libraries/fallblatt/fallblatt.c ****     DATA1_DDR &= ~DATA1;
+  97               		.loc 1 37 0
+  98 0032 5698      		cbi 0xa,6
+  38:libraries/fallblatt/fallblatt.c ****     DATA1_PORT |= DATA1;
+  99               		.loc 1 38 0
+ 100 0034 5E9A      		sbi 0xb,6
+  39:libraries/fallblatt/fallblatt.c ****     DATA2_DDR &= ~DATA2;
+ 101               		.loc 1 39 0
+ 102 0036 5598      		cbi 0xa,5
+  40:libraries/fallblatt/fallblatt.c ****     DATA2_PORT |= DATA2;
+ 103               		.loc 1 40 0
+ 104 0038 5D9A      		sbi 0xb,5
+  41:libraries/fallblatt/fallblatt.c ****     DATA3_DDR &= ~DATA3;
+ 105               		.loc 1 41 0
+ 106 003a 5498      		cbi 0xa,4
+  42:libraries/fallblatt/fallblatt.c ****     DATA3_PORT |= DATA3;
+ 107               		.loc 1 42 0
+ 108 003c 5C9A      		sbi 0xb,4
+  43:libraries/fallblatt/fallblatt.c ****     DATA4_DDR &= ~DATA4;
+ 109               		.loc 1 43 0
+ 110 003e 5398      		cbi 0xa,3
+  44:libraries/fallblatt/fallblatt.c ****     DATA4_PORT |= DATA4;
+ 111               		.loc 1 44 0
+ 112 0040 5B9A      		sbi 0xb,3
+  45:libraries/fallblatt/fallblatt.c ****     DATA5_DDR &= ~DATA5;
+ 113               		.loc 1 45 0
+ 114 0042 5298      		cbi 0xa,2
+  46:libraries/fallblatt/fallblatt.c ****     DATA5_PORT |= DATA5;   
+ 115               		.loc 1 46 0
+ 116 0044 5A9A      		sbi 0xb,2
+ 117 0046 0895      		ret
+ 118               		.cfi_endproc
+ 119               	.LFE8:
+ 121               	.global	set_positions
+ 123               	set_positions:
+ 124               	.LFB9:
+  47:libraries/fallblatt/fallblatt.c **** }
+  48:libraries/fallblatt/fallblatt.c **** 
+  49:libraries/fallblatt/fallblatt.c **** uint8_t set_positions(uint8_t hours, uint8_t minutes)
+  50:libraries/fallblatt/fallblatt.c **** {
+ 125               		.loc 1 50 0
+ 126               		.cfi_startproc
+ 127               	.LVL7:
+ 128 0048 CF92      		push r12
+ 129               	.LCFI2:
+ 130               		.cfi_def_cfa_offset 3
+ 131               		.cfi_offset 12, -2
+ 132 004a DF92      		push r13
+ 133               	.LCFI3:
+ 134               		.cfi_def_cfa_offset 4
+ 135               		.cfi_offset 13, -3
+ 136 004c EF92      		push r14
+ 137               	.LCFI4:
+ 138               		.cfi_def_cfa_offset 5
+ 139               		.cfi_offset 14, -4
+ 140 004e FF92      		push r15
+ 141               	.LCFI5:
+ 142               		.cfi_def_cfa_offset 6
+ 143               		.cfi_offset 15, -5
+ 144 0050 0F93      		push r16
+ 145               	.LCFI6:
+ 146               		.cfi_def_cfa_offset 7
+ 147               		.cfi_offset 16, -6
+ 148 0052 1F93      		push r17
+ 149               	.LCFI7:
+ 150               		.cfi_def_cfa_offset 8
+ 151               		.cfi_offset 17, -7
+ 152 0054 CF93      		push r28
+ 153               	.LCFI8:
+ 154               		.cfi_def_cfa_offset 9
+ 155               		.cfi_offset 28, -8
+ 156 0056 DF93      		push r29
+ 157               	.LCFI9:
+ 158               		.cfi_def_cfa_offset 10
+ 159               		.cfi_offset 29, -9
+ 160 0058 00D0      		rcall .
+ 161 005a 00D0      		rcall .
+ 162 005c 00D0      		rcall .
+ 163               	.LCFI10:
+ 164               		.cfi_def_cfa_offset 16
+ 165 005e CDB7      		in r28,__SP_L__
+ 166 0060 DEB7      		in r29,__SP_H__
+ 167               	.LCFI11:
+ 168               		.cfi_def_cfa_register 28
+ 169               	/* prologue: function */
+ 170               	/* frame size = 6 */
+ 171               	/* stack size = 14 */
+ 172               	.L__stack_usage = 14
+ 173               	.LVL8:
+  51:libraries/fallblatt/fallblatt.c ****     uint8_t value[6];
+  52:libraries/fallblatt/fallblatt.c ****     uint8_t number_h = 0;
+  53:libraries/fallblatt/fallblatt.c ****     uint8_t number_m = 0;
+  54:libraries/fallblatt/fallblatt.c ****     uint8_t wanted_h = 0;
+  55:libraries/fallblatt/fallblatt.c ****     uint8_t wanted_m = 0;
+  56:libraries/fallblatt/fallblatt.c ****     uint8_t done_m = 0;
+  57:libraries/fallblatt/fallblatt.c ****     uint8_t done_h = 0;
+  58:libraries/fallblatt/fallblatt.c ****     
+  59:libraries/fallblatt/fallblatt.c ****     if(minutes >= 0 && minutes < 31) wanted_m = minutes + 1;
+ 174               		.loc 1 59 0
+ 175 0062 6F31      		cpi r22,lo8(31)
+ 176 0064 00F4      		brsh .L12
+ 177               		.loc 1 59 0 is_stmt 0 discriminator 1
+ 178 0066 6F5F      		subi r22,lo8(-(1))
+ 179               	.LVL9:
+ 180 0068 00C0      		rjmp .L13
+ 181               	.LVL10:
+ 182               	.L12:
+  60:libraries/fallblatt/fallblatt.c ****     else if(minutes >= 31 && minutes < 60) wanted_m = minutes + 2;
+ 183               		.loc 1 60 0 is_stmt 1
+ 184 006a 91EE      		ldi r25,lo8(-31)
+ 185 006c 960F      		add r25,r22
+ 186 006e 9D31      		cpi r25,lo8(29)
+ 187 0070 00F4      		brsh .L29
+ 188               		.loc 1 60 0 is_stmt 0 discriminator 1
+ 189 0072 6E5F      		subi r22,lo8(-(2))
+ 190               	.LVL11:
+ 191 0074 00C0      		rjmp .L13
+ 192               	.LVL12:
+ 193               	.L29:
+  61:libraries/fallblatt/fallblatt.c ****     else wanted_m = 1;
+ 194               		.loc 1 61 0 is_stmt 1
+ 195 0076 61E0      		ldi r22,lo8(1)
+ 196               	.LVL13:
+ 197               	.L13:
+  62:libraries/fallblatt/fallblatt.c ****     
+  63:libraries/fallblatt/fallblatt.c ****     if(hours >= 0 && hours < 25) wanted_h = hours + 1;
+ 198               		.loc 1 63 0
+ 199 0078 8931      		cpi r24,lo8(25)
+ 200 007a 00F4      		brsh .L30
+ 201               		.loc 1 63 0 is_stmt 0 discriminator 1
+ 202 007c 8F5F      		subi r24,lo8(-(1))
+ 203               	.LVL14:
+ 204 007e 00C0      		rjmp .L14
+ 205               	.LVL15:
+ 206               	.L30:
+  64:libraries/fallblatt/fallblatt.c ****     else wanted_h = 1;
+ 207               		.loc 1 64 0 is_stmt 1
+ 208 0080 81E0      		ldi r24,lo8(1)
+ 209               	.LVL16:
+ 210               	.L14:
+  65:libraries/fallblatt/fallblatt.c ****     
+  66:libraries/fallblatt/fallblatt.c ****     while(done_m != 1 || done_h != 1)
+  67:libraries/fallblatt/fallblatt.c ****     {
+  68:libraries/fallblatt/fallblatt.c ****         if(done_h != 1)
+  69:libraries/fallblatt/fallblatt.c ****         {
+  70:libraries/fallblatt/fallblatt.c ****             //CHECK HOURS
+  71:libraries/fallblatt/fallblatt.c ****             _delay_us(100); 
+  72:libraries/fallblatt/fallblatt.c ****             SET_ADL;
+  73:libraries/fallblatt/fallblatt.c ****             SET_ADCH;
+  74:libraries/fallblatt/fallblatt.c ****             _delay_us(100);
+  75:libraries/fallblatt/fallblatt.c ****             value[0] = READ_DATA0;
+  76:libraries/fallblatt/fallblatt.c ****             value[1] = READ_DATA1;
+  77:libraries/fallblatt/fallblatt.c ****             value[2] = READ_DATA2;
+  78:libraries/fallblatt/fallblatt.c ****             value[3] = READ_DATA3;
+  79:libraries/fallblatt/fallblatt.c ****             value[4] = READ_DATA4;
+  80:libraries/fallblatt/fallblatt.c ****             value[5] = READ_DATA5;
+  81:libraries/fallblatt/fallblatt.c ****             
+  82:libraries/fallblatt/fallblatt.c ****             for(uint8_t i=0; i<6; i++)
+  83:libraries/fallblatt/fallblatt.c ****             {
+  84:libraries/fallblatt/fallblatt.c ****                 if(value[i] == 0) value[i] = 1;
+  85:libraries/fallblatt/fallblatt.c ****                 else value[i] = 0;
+  86:libraries/fallblatt/fallblatt.c ****                 number_h ^= (-value[i] ^ number_h) & (1 << i);
+  87:libraries/fallblatt/fallblatt.c ****             }
+  88:libraries/fallblatt/fallblatt.c ****             
+  89:libraries/fallblatt/fallblatt.c ****             if(number_h != wanted_h)
+  90:libraries/fallblatt/fallblatt.c ****             {
+  91:libraries/fallblatt/fallblatt.c ****                 SET_START;
+  92:libraries/fallblatt/fallblatt.c ****                 _delay_us(100);
+  93:libraries/fallblatt/fallblatt.c ****                 RESET_ADL;
+  94:libraries/fallblatt/fallblatt.c ****                 _delay_us(100);
+  95:libraries/fallblatt/fallblatt.c ****                 RESET_ADCH;
+  96:libraries/fallblatt/fallblatt.c ****                 RESET_START;
+  97:libraries/fallblatt/fallblatt.c ****             }
+  98:libraries/fallblatt/fallblatt.c ****             else if(number_h == wanted_h)
+  99:libraries/fallblatt/fallblatt.c ****             {
+ 100:libraries/fallblatt/fallblatt.c ****                 RESET_ADL;
+ 101:libraries/fallblatt/fallblatt.c ****                 RESET_ADCH;
+ 102:libraries/fallblatt/fallblatt.c ****                 done_h = 1;
+ 103:libraries/fallblatt/fallblatt.c ****             }
+ 104:libraries/fallblatt/fallblatt.c ****         }
+ 105:libraries/fallblatt/fallblatt.c ****     
+ 106:libraries/fallblatt/fallblatt.c ****         if(done_m != 1)
+ 107:libraries/fallblatt/fallblatt.c ****         {
+ 108:libraries/fallblatt/fallblatt.c ****             //CHECK MINUTES 
+ 109:libraries/fallblatt/fallblatt.c ****             _delay_us(100);
+ 110:libraries/fallblatt/fallblatt.c ****             SET_ADL;
+ 111:libraries/fallblatt/fallblatt.c ****             SET_ADCM;
+ 112:libraries/fallblatt/fallblatt.c ****             _delay_us(100);
+ 113:libraries/fallblatt/fallblatt.c ****             value[0] = READ_DATA0;
+ 114:libraries/fallblatt/fallblatt.c ****             value[1] = READ_DATA1;
+ 115:libraries/fallblatt/fallblatt.c ****             value[2] = READ_DATA2;
+ 116:libraries/fallblatt/fallblatt.c ****             value[3] = READ_DATA3;
+ 117:libraries/fallblatt/fallblatt.c ****             value[4] = READ_DATA4;
+ 118:libraries/fallblatt/fallblatt.c ****             value[5] = READ_DATA5;
+ 119:libraries/fallblatt/fallblatt.c ****             
+ 120:libraries/fallblatt/fallblatt.c ****             for(uint8_t i=0; i<6; i++)
+ 121:libraries/fallblatt/fallblatt.c ****             {
+ 122:libraries/fallblatt/fallblatt.c ****                 if(value[i] == 0) value[i] = 1;
+ 123:libraries/fallblatt/fallblatt.c ****                 else value[i] = 0;
+ 124:libraries/fallblatt/fallblatt.c ****                 number_m ^= (-value[i] ^ number_m) & (1 << i);
+ 125:libraries/fallblatt/fallblatt.c ****             }
+ 126:libraries/fallblatt/fallblatt.c ****             
+ 127:libraries/fallblatt/fallblatt.c ****             //If number is not wanted restart motor. Else reset signals but keep motor off.        
+ 128:libraries/fallblatt/fallblatt.c ****             if(number_m != wanted_m)
+ 129:libraries/fallblatt/fallblatt.c ****             {
+ 130:libraries/fallblatt/fallblatt.c ****                 SET_START;
+ 131:libraries/fallblatt/fallblatt.c ****                 _delay_us(100);
+ 132:libraries/fallblatt/fallblatt.c ****                 RESET_ADL;
+ 133:libraries/fallblatt/fallblatt.c ****                 _delay_us(100);
+ 134:libraries/fallblatt/fallblatt.c ****                 RESET_ADCM;
+ 135:libraries/fallblatt/fallblatt.c ****                 RESET_START;
+ 136:libraries/fallblatt/fallblatt.c ****             }
+ 137:libraries/fallblatt/fallblatt.c ****             else
+ 138:libraries/fallblatt/fallblatt.c ****             {
+ 139:libraries/fallblatt/fallblatt.c ****                 RESET_ADL;
+ 140:libraries/fallblatt/fallblatt.c ****                 RESET_ADCM;
+ 141:libraries/fallblatt/fallblatt.c ****                 done_m = 1;
+ 211               		.loc 1 141 0
+ 212 0082 20E0      		ldi r18,0
+ 213 0084 50E0      		ldi r21,0
+ 214 0086 40E0      		ldi r20,0
+ 215 0088 30E0      		ldi r19,0
+ 216               	.LBB20:
+ 122:libraries/fallblatt/fallblatt.c ****                 else value[i] = 0;
+ 217               		.loc 1 122 0
+ 218 008a 71E0      		ldi r23,lo8(1)
+ 124:libraries/fallblatt/fallblatt.c ****             }
+ 219               		.loc 1 124 0
+ 220 008c 01E0      		ldi r16,lo8(1)
+ 221 008e 10E0      		ldi r17,0
+ 222               	.LVL17:
+ 223               	.L27:
+ 224               	.LBE20:
+  68:libraries/fallblatt/fallblatt.c ****         {
+ 225               		.loc 1 68 0
+ 226 0090 2130      		cpi r18,lo8(1)
+ 227 0092 01F4      		brne .+2
+ 228 0094 00C0      		rjmp .L16
+ 229               	.LVL18:
+ 230               	.L28:
+ 231               	.LBB21:
+ 232               	.LBB22:
+ 233               		.file 2 "/usr/lib/avr/include/util/delay.h"
+   1:/usr/lib/avr/include/util/delay.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:/usr/lib/avr/include/util/delay.h ****    Copyright (c) 2004,2005,2007 Joerg Wunsch
+   3:/usr/lib/avr/include/util/delay.h ****    Copyright (c) 2007  Florin-Viorel Petrov
+   4:/usr/lib/avr/include/util/delay.h ****    All rights reserved.
+   5:/usr/lib/avr/include/util/delay.h **** 
+   6:/usr/lib/avr/include/util/delay.h ****    Redistribution and use in source and binary forms, with or without
+   7:/usr/lib/avr/include/util/delay.h ****    modification, are permitted provided that the following conditions are met:
+   8:/usr/lib/avr/include/util/delay.h **** 
+   9:/usr/lib/avr/include/util/delay.h ****    * Redistributions of source code must retain the above copyright
+  10:/usr/lib/avr/include/util/delay.h ****      notice, this list of conditions and the following disclaimer.
+  11:/usr/lib/avr/include/util/delay.h **** 
+  12:/usr/lib/avr/include/util/delay.h ****    * Redistributions in binary form must reproduce the above copyright
+  13:/usr/lib/avr/include/util/delay.h ****      notice, this list of conditions and the following disclaimer in
+  14:/usr/lib/avr/include/util/delay.h ****      the documentation and/or other materials provided with the
+  15:/usr/lib/avr/include/util/delay.h ****      distribution.
+  16:/usr/lib/avr/include/util/delay.h **** 
+  17:/usr/lib/avr/include/util/delay.h ****    * Neither the name of the copyright holders nor the names of
+  18:/usr/lib/avr/include/util/delay.h ****      contributors may be used to endorse or promote products derived
+  19:/usr/lib/avr/include/util/delay.h ****      from this software without specific prior written permission.
+  20:/usr/lib/avr/include/util/delay.h **** 
+  21:/usr/lib/avr/include/util/delay.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  22:/usr/lib/avr/include/util/delay.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  23:/usr/lib/avr/include/util/delay.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  24:/usr/lib/avr/include/util/delay.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  25:/usr/lib/avr/include/util/delay.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  26:/usr/lib/avr/include/util/delay.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  27:/usr/lib/avr/include/util/delay.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  28:/usr/lib/avr/include/util/delay.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  29:/usr/lib/avr/include/util/delay.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  30:/usr/lib/avr/include/util/delay.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  31:/usr/lib/avr/include/util/delay.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  32:/usr/lib/avr/include/util/delay.h **** 
+  33:/usr/lib/avr/include/util/delay.h **** /* $Id$ */
+  34:/usr/lib/avr/include/util/delay.h **** 
+  35:/usr/lib/avr/include/util/delay.h **** #ifndef _UTIL_DELAY_H_
+  36:/usr/lib/avr/include/util/delay.h **** #define _UTIL_DELAY_H_ 1
+  37:/usr/lib/avr/include/util/delay.h **** 
+  38:/usr/lib/avr/include/util/delay.h **** #ifndef __HAS_DELAY_CYCLES
+  39:/usr/lib/avr/include/util/delay.h **** #define __HAS_DELAY_CYCLES 1
+  40:/usr/lib/avr/include/util/delay.h **** #endif
+  41:/usr/lib/avr/include/util/delay.h **** 
+  42:/usr/lib/avr/include/util/delay.h **** #include <inttypes.h>
+  43:/usr/lib/avr/include/util/delay.h **** #include <util/delay_basic.h>
+  44:/usr/lib/avr/include/util/delay.h **** #include <math.h>
+  45:/usr/lib/avr/include/util/delay.h **** 
+  46:/usr/lib/avr/include/util/delay.h **** /** \file */
+  47:/usr/lib/avr/include/util/delay.h **** /** \defgroup util_delay <util/delay.h>: Convenience functions for busy-wait delay loops
+  48:/usr/lib/avr/include/util/delay.h ****     \code
+  49:/usr/lib/avr/include/util/delay.h ****     #define F_CPU 1000000UL  // 1 MHz
+  50:/usr/lib/avr/include/util/delay.h ****     //#define F_CPU 14.7456E6
+  51:/usr/lib/avr/include/util/delay.h ****     #include <util/delay.h>
+  52:/usr/lib/avr/include/util/delay.h ****     \endcode
+  53:/usr/lib/avr/include/util/delay.h **** 
+  54:/usr/lib/avr/include/util/delay.h ****     \note As an alternative method, it is possible to pass the
+  55:/usr/lib/avr/include/util/delay.h ****     F_CPU macro down to the compiler from the Makefile.
+  56:/usr/lib/avr/include/util/delay.h ****     Obviously, in that case, no \c \#define statement should be
+  57:/usr/lib/avr/include/util/delay.h ****     used.
+  58:/usr/lib/avr/include/util/delay.h **** 
+  59:/usr/lib/avr/include/util/delay.h ****     The functions in this header file are wrappers around the basic
+  60:/usr/lib/avr/include/util/delay.h ****     busy-wait functions from <util/delay_basic.h>.  They are meant as
+  61:/usr/lib/avr/include/util/delay.h ****     convenience functions where actual time values can be specified
+  62:/usr/lib/avr/include/util/delay.h ****     rather than a number of cycles to wait for.  The idea behind is
+  63:/usr/lib/avr/include/util/delay.h ****     that compile-time constant expressions will be eliminated by
+  64:/usr/lib/avr/include/util/delay.h ****     compiler optimization so floating-point expressions can be used
+  65:/usr/lib/avr/include/util/delay.h ****     to calculate the number of delay cycles needed based on the CPU
+  66:/usr/lib/avr/include/util/delay.h ****     frequency passed by the macro F_CPU.
+  67:/usr/lib/avr/include/util/delay.h **** 
+  68:/usr/lib/avr/include/util/delay.h ****     \note In order for these functions to work as intended, compiler
+  69:/usr/lib/avr/include/util/delay.h ****     optimizations <em>must</em> be enabled, and the delay time
+  70:/usr/lib/avr/include/util/delay.h ****     <em>must</em> be an expression that is a known constant at
+  71:/usr/lib/avr/include/util/delay.h ****     compile-time.  If these requirements are not met, the resulting
+  72:/usr/lib/avr/include/util/delay.h ****     delay will be much longer (and basically unpredictable), and
+  73:/usr/lib/avr/include/util/delay.h ****     applications that otherwise do not use floating-point calculations
+  74:/usr/lib/avr/include/util/delay.h ****     will experience severe code bloat by the floating-point library
+  75:/usr/lib/avr/include/util/delay.h ****     routines linked into the application.
+  76:/usr/lib/avr/include/util/delay.h **** 
+  77:/usr/lib/avr/include/util/delay.h ****     The functions available allow the specification of microsecond, and
+  78:/usr/lib/avr/include/util/delay.h ****     millisecond delays directly, using the application-supplied macro
+  79:/usr/lib/avr/include/util/delay.h ****     F_CPU as the CPU clock frequency (in Hertz).
+  80:/usr/lib/avr/include/util/delay.h **** 
+  81:/usr/lib/avr/include/util/delay.h **** */
+  82:/usr/lib/avr/include/util/delay.h **** 
+  83:/usr/lib/avr/include/util/delay.h **** #if !defined(__DOXYGEN__)
+  84:/usr/lib/avr/include/util/delay.h **** static inline void _delay_us(double __us) __attribute__((always_inline));
+  85:/usr/lib/avr/include/util/delay.h **** static inline void _delay_ms(double __ms) __attribute__((always_inline));
+  86:/usr/lib/avr/include/util/delay.h **** #endif
+  87:/usr/lib/avr/include/util/delay.h **** 
+  88:/usr/lib/avr/include/util/delay.h **** #ifndef F_CPU
+  89:/usr/lib/avr/include/util/delay.h **** /* prevent compiler error by supplying a default */
+  90:/usr/lib/avr/include/util/delay.h **** # warning "F_CPU not defined for <util/delay.h>"
+  91:/usr/lib/avr/include/util/delay.h **** # define F_CPU 1000000UL
+  92:/usr/lib/avr/include/util/delay.h **** #endif
+  93:/usr/lib/avr/include/util/delay.h **** 
+  94:/usr/lib/avr/include/util/delay.h **** #ifndef __OPTIMIZE__
+  95:/usr/lib/avr/include/util/delay.h **** # warning "Compiler optimizations disabled; functions from <util/delay.h> won't work as designed"
+  96:/usr/lib/avr/include/util/delay.h **** #endif
+  97:/usr/lib/avr/include/util/delay.h **** 
+  98:/usr/lib/avr/include/util/delay.h **** #if __HAS_DELAY_CYCLES && defined(__OPTIMIZE__) && \
+  99:/usr/lib/avr/include/util/delay.h ****   !defined(__DELAY_BACKWARD_COMPATIBLE__) &&	   \
+ 100:/usr/lib/avr/include/util/delay.h ****   __STDC_HOSTED__
+ 101:/usr/lib/avr/include/util/delay.h **** #  include <math.h>
+ 102:/usr/lib/avr/include/util/delay.h **** #endif
+ 103:/usr/lib/avr/include/util/delay.h **** 
+ 104:/usr/lib/avr/include/util/delay.h **** /**
+ 105:/usr/lib/avr/include/util/delay.h ****    \ingroup util_delay
+ 106:/usr/lib/avr/include/util/delay.h **** 
+ 107:/usr/lib/avr/include/util/delay.h ****    Perform a delay of \c __ms milliseconds, using _delay_loop_2().
+ 108:/usr/lib/avr/include/util/delay.h **** 
+ 109:/usr/lib/avr/include/util/delay.h ****    The macro F_CPU is supposed to be defined to a
+ 110:/usr/lib/avr/include/util/delay.h ****    constant defining the CPU clock frequency (in Hertz).
+ 111:/usr/lib/avr/include/util/delay.h **** 
+ 112:/usr/lib/avr/include/util/delay.h ****    The maximal possible delay is 262.14 ms / F_CPU in MHz.
+ 113:/usr/lib/avr/include/util/delay.h **** 
+ 114:/usr/lib/avr/include/util/delay.h ****    When the user request delay which exceed the maximum possible one,
+ 115:/usr/lib/avr/include/util/delay.h ****    _delay_ms() provides a decreased resolution functionality. In this
+ 116:/usr/lib/avr/include/util/delay.h ****    mode _delay_ms() will work with a resolution of 1/10 ms, providing
+ 117:/usr/lib/avr/include/util/delay.h ****    delays up to 6.5535 seconds (independent from CPU frequency).  The
+ 118:/usr/lib/avr/include/util/delay.h ****    user will not be informed about decreased resolution.
+ 119:/usr/lib/avr/include/util/delay.h **** 
+ 120:/usr/lib/avr/include/util/delay.h ****    If the avr-gcc toolchain has __builtin_avr_delay_cycles(unsigned long)
+ 121:/usr/lib/avr/include/util/delay.h ****    support, maximal possible delay is 4294967.295 ms/ F_CPU in MHz. For
+ 122:/usr/lib/avr/include/util/delay.h ****    values greater than the maximal possible delay, overflows results in
+ 123:/usr/lib/avr/include/util/delay.h ****    no delay i.e., 0ms.
+ 124:/usr/lib/avr/include/util/delay.h **** 
+ 125:/usr/lib/avr/include/util/delay.h ****    Conversion of __us into clock cycles may not always result in integer.
+ 126:/usr/lib/avr/include/util/delay.h ****    By default, the clock cycles rounded up to next integer. This ensures that
+ 127:/usr/lib/avr/include/util/delay.h ****    the user gets atleast __us microseconds of delay.
+ 128:/usr/lib/avr/include/util/delay.h **** 
+ 129:/usr/lib/avr/include/util/delay.h ****    Alternatively, user can define __DELAY_ROUND_DOWN__ and __DELAY_ROUND_CLOSEST__
+ 130:/usr/lib/avr/include/util/delay.h ****    to round down and round to closest integer.
+ 131:/usr/lib/avr/include/util/delay.h **** 
+ 132:/usr/lib/avr/include/util/delay.h ****    Note: The new implementation of _delay_ms(double __ms) with 
+ 133:/usr/lib/avr/include/util/delay.h ****     __builtin_avr_delay_cycles(unsigned long) support is not backward compatible. 
+ 134:/usr/lib/avr/include/util/delay.h ****    User can define __DELAY_BACKWARD_COMPATIBLE__ to get a backward compatible delay.
+ 135:/usr/lib/avr/include/util/delay.h ****    Also, the backward compatible
+ 136:/usr/lib/avr/include/util/delay.h ****    algorithm will be chosen if the code is compiled in a <em>freestanding
+ 137:/usr/lib/avr/include/util/delay.h ****    environment</em> (GCC option \c -ffreestanding), as the math functions
+ 138:/usr/lib/avr/include/util/delay.h ****    required for rounding are not available to the compiler then.
+ 139:/usr/lib/avr/include/util/delay.h **** 
+ 140:/usr/lib/avr/include/util/delay.h ****  */
+ 141:/usr/lib/avr/include/util/delay.h **** void
+ 142:/usr/lib/avr/include/util/delay.h **** _delay_ms(double __ms)
+ 143:/usr/lib/avr/include/util/delay.h **** {
+ 144:/usr/lib/avr/include/util/delay.h **** 	double __tmp ; 
+ 145:/usr/lib/avr/include/util/delay.h **** #if __HAS_DELAY_CYCLES && defined(__OPTIMIZE__) && \
+ 146:/usr/lib/avr/include/util/delay.h ****   !defined(__DELAY_BACKWARD_COMPATIBLE__) &&	   \
+ 147:/usr/lib/avr/include/util/delay.h ****   __STDC_HOSTED__
+ 148:/usr/lib/avr/include/util/delay.h **** 	uint32_t __ticks_dc;
+ 149:/usr/lib/avr/include/util/delay.h **** 	extern void __builtin_avr_delay_cycles(unsigned long);
+ 150:/usr/lib/avr/include/util/delay.h **** 	__tmp = ((F_CPU) / 1e3) * __ms;
+ 151:/usr/lib/avr/include/util/delay.h **** 
+ 152:/usr/lib/avr/include/util/delay.h **** 	#if defined(__DELAY_ROUND_DOWN__)
+ 153:/usr/lib/avr/include/util/delay.h **** 		__ticks_dc = (uint32_t)fabs(__tmp);
+ 154:/usr/lib/avr/include/util/delay.h **** 
+ 155:/usr/lib/avr/include/util/delay.h **** 	#elif defined(__DELAY_ROUND_CLOSEST__)
+ 156:/usr/lib/avr/include/util/delay.h **** 		__ticks_dc = (uint32_t)(fabs(__tmp)+0.5);
+ 157:/usr/lib/avr/include/util/delay.h **** 
+ 158:/usr/lib/avr/include/util/delay.h **** 	#else
+ 159:/usr/lib/avr/include/util/delay.h **** 		//round up by default
+ 160:/usr/lib/avr/include/util/delay.h **** 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+ 161:/usr/lib/avr/include/util/delay.h **** 	#endif
+ 162:/usr/lib/avr/include/util/delay.h **** 
+ 163:/usr/lib/avr/include/util/delay.h **** 	__builtin_avr_delay_cycles(__ticks_dc);
+ 164:/usr/lib/avr/include/util/delay.h **** 
+ 165:/usr/lib/avr/include/util/delay.h **** #else
+ 166:/usr/lib/avr/include/util/delay.h **** 	uint16_t __ticks;
+ 167:/usr/lib/avr/include/util/delay.h **** 	__tmp = ((F_CPU) / 4e3) * __ms;
+ 168:/usr/lib/avr/include/util/delay.h **** 	if (__tmp < 1.0)
+ 169:/usr/lib/avr/include/util/delay.h **** 		__ticks = 1;
+ 170:/usr/lib/avr/include/util/delay.h **** 	else if (__tmp > 65535)
+ 171:/usr/lib/avr/include/util/delay.h **** 	{
+ 172:/usr/lib/avr/include/util/delay.h **** 		//	__ticks = requested delay in 1/10 ms
+ 173:/usr/lib/avr/include/util/delay.h **** 		__ticks = (uint16_t) (__ms * 10.0);
+ 174:/usr/lib/avr/include/util/delay.h **** 		while(__ticks)
+ 175:/usr/lib/avr/include/util/delay.h **** 		{
+ 176:/usr/lib/avr/include/util/delay.h **** 			// wait 1/10 ms
+ 177:/usr/lib/avr/include/util/delay.h **** 			_delay_loop_2(((F_CPU) / 4e3) / 10);
+ 178:/usr/lib/avr/include/util/delay.h **** 			__ticks --;
+ 179:/usr/lib/avr/include/util/delay.h **** 		}
+ 180:/usr/lib/avr/include/util/delay.h **** 		return;
+ 181:/usr/lib/avr/include/util/delay.h **** 	}
+ 182:/usr/lib/avr/include/util/delay.h **** 	else
+ 183:/usr/lib/avr/include/util/delay.h **** 		__ticks = (uint16_t)__tmp;
+ 184:/usr/lib/avr/include/util/delay.h **** 	_delay_loop_2(__ticks);
+ 185:/usr/lib/avr/include/util/delay.h **** #endif
+ 186:/usr/lib/avr/include/util/delay.h **** }
+ 187:/usr/lib/avr/include/util/delay.h **** 
+ 188:/usr/lib/avr/include/util/delay.h **** /**
+ 189:/usr/lib/avr/include/util/delay.h ****    \ingroup util_delay
+ 190:/usr/lib/avr/include/util/delay.h **** 
+ 191:/usr/lib/avr/include/util/delay.h ****    Perform a delay of \c __us microseconds, using _delay_loop_1().
+ 192:/usr/lib/avr/include/util/delay.h **** 
+ 193:/usr/lib/avr/include/util/delay.h ****    The macro F_CPU is supposed to be defined to a
+ 194:/usr/lib/avr/include/util/delay.h ****    constant defining the CPU clock frequency (in Hertz).
+ 195:/usr/lib/avr/include/util/delay.h **** 
+ 196:/usr/lib/avr/include/util/delay.h ****    The maximal possible delay is 768 us / F_CPU in MHz.
+ 197:/usr/lib/avr/include/util/delay.h **** 
+ 198:/usr/lib/avr/include/util/delay.h ****    If the user requests a delay greater than the maximal possible one,
+ 199:/usr/lib/avr/include/util/delay.h ****    _delay_us() will automatically call _delay_ms() instead.  The user
+ 200:/usr/lib/avr/include/util/delay.h ****    will not be informed about this case.
+ 201:/usr/lib/avr/include/util/delay.h **** 
+ 202:/usr/lib/avr/include/util/delay.h ****    If the avr-gcc toolchain has __builtin_avr_delay_cycles(unsigned long)
+ 203:/usr/lib/avr/include/util/delay.h ****    support, maximal possible delay is 4294967.295 us/ F_CPU in MHz. For
+ 204:/usr/lib/avr/include/util/delay.h ****    values greater than the maximal possible delay, overflow results in
+ 205:/usr/lib/avr/include/util/delay.h ****    no delay i.e., 0us.
+ 206:/usr/lib/avr/include/util/delay.h ****   
+ 207:/usr/lib/avr/include/util/delay.h ****    Conversion of __us into clock cycles may not always result in integer.
+ 208:/usr/lib/avr/include/util/delay.h ****    By default, the clock cycles rounded up to next integer. This ensures that
+ 209:/usr/lib/avr/include/util/delay.h ****    the user gets atleast __us microseconds of delay.
+ 210:/usr/lib/avr/include/util/delay.h **** 
+ 211:/usr/lib/avr/include/util/delay.h ****    Alternatively, user can define __DELAY_ROUND_DOWN__ and __DELAY_ROUND_CLOSEST__
+ 212:/usr/lib/avr/include/util/delay.h ****    to round down and round to closest integer.
+ 213:/usr/lib/avr/include/util/delay.h ****  
+ 214:/usr/lib/avr/include/util/delay.h ****    Note: The new implementation of _delay_us(double __us) with 
+ 215:/usr/lib/avr/include/util/delay.h ****     __builtin_avr_delay_cycles(unsigned long) support is not backward compatible.
+ 216:/usr/lib/avr/include/util/delay.h ****    User can define __DELAY_BACKWARD_COMPATIBLE__ to get a backward compatible delay.
+ 217:/usr/lib/avr/include/util/delay.h ****    Also, the backward compatible
+ 218:/usr/lib/avr/include/util/delay.h ****    algorithm will be chosen if the code is compiled in a <em>freestanding
+ 219:/usr/lib/avr/include/util/delay.h ****    environment</em> (GCC option \c -ffreestanding), as the math functions
+ 220:/usr/lib/avr/include/util/delay.h ****    required for rounding are not available to the compiler then.
+ 221:/usr/lib/avr/include/util/delay.h **** 
+ 222:/usr/lib/avr/include/util/delay.h ****  */
+ 223:/usr/lib/avr/include/util/delay.h **** void
+ 224:/usr/lib/avr/include/util/delay.h **** _delay_us(double __us)
+ 225:/usr/lib/avr/include/util/delay.h **** {
+ 226:/usr/lib/avr/include/util/delay.h **** 	double __tmp ; 
+ 227:/usr/lib/avr/include/util/delay.h **** #if __HAS_DELAY_CYCLES && defined(__OPTIMIZE__) && \
+ 228:/usr/lib/avr/include/util/delay.h ****   !defined(__DELAY_BACKWARD_COMPATIBLE__) &&	   \
+ 229:/usr/lib/avr/include/util/delay.h ****   __STDC_HOSTED__
+ 230:/usr/lib/avr/include/util/delay.h **** 	uint32_t __ticks_dc;
+ 231:/usr/lib/avr/include/util/delay.h **** 	extern void __builtin_avr_delay_cycles(unsigned long);
+ 232:/usr/lib/avr/include/util/delay.h **** 	__tmp = ((F_CPU) / 1e6) * __us;
+ 233:/usr/lib/avr/include/util/delay.h **** 
+ 234:/usr/lib/avr/include/util/delay.h **** 	#if defined(__DELAY_ROUND_DOWN__)
+ 235:/usr/lib/avr/include/util/delay.h **** 		__ticks_dc = (uint32_t)fabs(__tmp);
+ 236:/usr/lib/avr/include/util/delay.h **** 
+ 237:/usr/lib/avr/include/util/delay.h **** 	#elif defined(__DELAY_ROUND_CLOSEST__)
+ 238:/usr/lib/avr/include/util/delay.h **** 		__ticks_dc = (uint32_t)(fabs(__tmp)+0.5);
+ 239:/usr/lib/avr/include/util/delay.h **** 
+ 240:/usr/lib/avr/include/util/delay.h **** 	#else
+ 241:/usr/lib/avr/include/util/delay.h **** 		//round up by default
+ 242:/usr/lib/avr/include/util/delay.h **** 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+ 243:/usr/lib/avr/include/util/delay.h **** 	#endif
+ 244:/usr/lib/avr/include/util/delay.h **** 
+ 245:/usr/lib/avr/include/util/delay.h **** 	__builtin_avr_delay_cycles(__ticks_dc);
+ 234               		.loc 2 245 0
+ 235 0096 A7EC      		ldi r26,lo8(199)
+ 236 0098 B0E0      		ldi r27,hi8(199)
+ 237 009a 1197      	1:	sbiw r26,1
+ 238 009c 01F4      		brne 1b
+ 239 009e 00C0      		rjmp .
+ 240 00a0 0000      		nop
+ 241               	.LBE22:
+ 242               	.LBE21:
+  72:libraries/fallblatt/fallblatt.c ****             SET_ADCH;
+ 243               		.loc 1 72 0
+ 244 00a2 419A      		sbi 0x8,1
+  73:libraries/fallblatt/fallblatt.c ****             _delay_us(100);
+ 245               		.loc 1 73 0
+ 246 00a4 429A      		sbi 0x8,2
+ 247               	.LVL19:
+ 248               	.LBB23:
+ 249               	.LBB24:
+ 250               		.loc 2 245 0
+ 251 00a6 E7EC      		ldi r30,lo8(199)
+ 252 00a8 F0E0      		ldi r31,hi8(199)
+ 253 00aa 3197      	1:	sbiw r30,1
+ 254 00ac 01F4      		brne 1b
+ 255 00ae 00C0      		rjmp .
+ 256 00b0 0000      		nop
+ 257               	.LBE24:
+ 258               	.LBE23:
+  75:libraries/fallblatt/fallblatt.c ****             value[1] = READ_DATA1;
+ 259               		.loc 1 75 0
+ 260 00b2 99B1      		in r25,0x9
+ 261 00b4 9078      		andi r25,lo8(-128)
+ 262 00b6 9983      		std Y+1,r25
+  76:libraries/fallblatt/fallblatt.c ****             value[2] = READ_DATA2;
+ 263               		.loc 1 76 0
+ 264 00b8 99B1      		in r25,0x9
+ 265 00ba 9074      		andi r25,lo8(64)
+ 266 00bc 9A83      		std Y+2,r25
+  77:libraries/fallblatt/fallblatt.c ****             value[3] = READ_DATA3;
+ 267               		.loc 1 77 0
+ 268 00be 99B1      		in r25,0x9
+ 269 00c0 9072      		andi r25,lo8(32)
+ 270 00c2 9B83      		std Y+3,r25
+  78:libraries/fallblatt/fallblatt.c ****             value[4] = READ_DATA4;
+ 271               		.loc 1 78 0
+ 272 00c4 99B1      		in r25,0x9
+ 273 00c6 9071      		andi r25,lo8(16)
+ 274 00c8 9C83      		std Y+4,r25
+  79:libraries/fallblatt/fallblatt.c ****             value[5] = READ_DATA5;
+ 275               		.loc 1 79 0
+ 276 00ca 99B1      		in r25,0x9
+ 277 00cc 9870      		andi r25,lo8(8)
+ 278 00ce 9D83      		std Y+5,r25
+  80:libraries/fallblatt/fallblatt.c ****             
+ 279               		.loc 1 80 0
+ 280 00d0 99B1      		in r25,0x9
+ 281 00d2 9470      		andi r25,lo8(4)
+ 282 00d4 9E83      		std Y+6,r25
+ 283               	.LVL20:
+ 284 00d6 FE01      		movw r30,r28
+ 285 00d8 3196      		adiw r30,1
+ 286 00da C12C      		mov r12,__zero_reg__
+ 287 00dc D12C      		mov r13,__zero_reg__
+ 288               	.LVL21:
+ 289               	.L19:
+ 290               	.LBB25:
+  84:libraries/fallblatt/fallblatt.c ****                 else value[i] = 0;
+ 291               		.loc 1 84 0
+ 292 00de 2C2D      		mov r18,r12
+ 293 00e0 7F01      		movw r14,r30
+ 294 00e2 9081      		ld r25,Z
+ 295 00e4 9111      		cpse r25,__zero_reg__
+ 296 00e6 00C0      		rjmp .L17
+  84:libraries/fallblatt/fallblatt.c ****                 else value[i] = 0;
+ 297               		.loc 1 84 0 is_stmt 0 discriminator 1
+ 298 00e8 7083      		st Z,r23
+ 299 00ea 00C0      		rjmp .L18
+ 300               	.L17:
+  85:libraries/fallblatt/fallblatt.c ****                 number_h ^= (-value[i] ^ number_h) & (1 << i);
+ 301               		.loc 1 85 0 is_stmt 1
+ 302 00ec 1082      		st Z,__zero_reg__
+ 303               	.L18:
+ 304 00ee 3196      		adiw r30,1
+  86:libraries/fallblatt/fallblatt.c ****             }
+ 305               		.loc 1 86 0 discriminator 2
+ 306 00f0 D701      		movw r26,r14
+ 307 00f2 9C91      		ld r25,X
+ 308 00f4 9195      		neg r25
+ 309 00f6 9327      		eor r25,r19
+ 310 00f8 7801      		movw r14,r16
+ 311 00fa 00C0      		rjmp 2f
+ 312               		1:
+ 313 00fc EE0C      		lsl r14
+ 314               		2:
+ 315 00fe 2A95      		dec r18
+ 316 0100 02F4      		brpl 1b
+ 317 0102 9E21      		and r25,r14
+ 318 0104 3927      		eor r19,r25
+ 319               	.LVL22:
+ 320 0106 BFEF      		ldi r27,-1
+ 321 0108 CB1A      		sub r12,r27
+ 322 010a DB0A      		sbc r13,r27
+ 323               	.LVL23:
+  82:libraries/fallblatt/fallblatt.c ****             {
+ 324               		.loc 1 82 0 discriminator 2
+ 325 010c 96E0      		ldi r25,6
+ 326 010e C916      		cp r12,r25
+ 327 0110 D104      		cpc r13,__zero_reg__
+ 328 0112 01F4      		brne .L19
+ 329               	.LBE25:
+  89:libraries/fallblatt/fallblatt.c ****             {
+ 330               		.loc 1 89 0
+ 331 0114 3817      		cp r19,r24
+ 332 0116 01F0      		breq .L20
+  91:libraries/fallblatt/fallblatt.c ****                 _delay_us(100);
+ 333               		.loc 1 91 0
+ 334 0118 409A      		sbi 0x8,0
+ 335               	.LVL24:
+ 336               	.LBB26:
+ 337               	.LBB27:
+ 338               		.loc 2 245 0
+ 339 011a A7EC      		ldi r26,lo8(199)
+ 340 011c B0E0      		ldi r27,hi8(199)
+ 341 011e 1197      	1:	sbiw r26,1
+ 342 0120 01F4      		brne 1b
+ 343 0122 00C0      		rjmp .
+ 344 0124 0000      		nop
+ 345               	.LBE27:
+ 346               	.LBE26:
+  93:libraries/fallblatt/fallblatt.c ****                 _delay_us(100);
+ 347               		.loc 1 93 0
+ 348 0126 4198      		cbi 0x8,1
+ 349               	.LVL25:
+ 350               	.LBB28:
+ 351               	.LBB29:
+ 352               		.loc 2 245 0
+ 353 0128 E7EC      		ldi r30,lo8(199)
+ 354 012a F0E0      		ldi r31,hi8(199)
+ 355 012c 3197      	1:	sbiw r30,1
+ 356 012e 01F4      		brne 1b
+ 357 0130 00C0      		rjmp .
+ 358 0132 0000      		nop
+ 359               	.LBE29:
+ 360               	.LBE28:
+  95:libraries/fallblatt/fallblatt.c ****                 RESET_START;
+ 361               		.loc 1 95 0
+ 362 0134 4298      		cbi 0x8,2
+  96:libraries/fallblatt/fallblatt.c ****             }
+ 363               		.loc 1 96 0
+ 364 0136 4098      		cbi 0x8,0
+ 365 0138 20E0      		ldi r18,0
+ 366 013a 00C0      		rjmp .L21
+ 367               	.LVL26:
+ 368               	.L20:
+ 100:libraries/fallblatt/fallblatt.c ****                 RESET_ADCH;
+ 369               		.loc 1 100 0
+ 370 013c 4198      		cbi 0x8,1
+ 101:libraries/fallblatt/fallblatt.c ****                 done_h = 1;
+ 371               		.loc 1 101 0
+ 372 013e 4298      		cbi 0x8,2
+ 373               	.LVL27:
+ 102:libraries/fallblatt/fallblatt.c ****             }
+ 374               		.loc 1 102 0
+ 375 0140 21E0      		ldi r18,lo8(1)
+ 376               	.LVL28:
+ 377               	.L21:
+ 106:libraries/fallblatt/fallblatt.c ****         {
+ 378               		.loc 1 106 0
+ 379 0142 5130      		cpi r21,lo8(1)
+ 380 0144 01F4      		brne .+2
+ 381 0146 00C0      		rjmp .L39
+ 382               	.LVL29:
+ 383               	.L16:
+ 384               	.LBB30:
+ 385               	.LBB31:
+ 386               		.loc 2 245 0
+ 387 0148 A7EC      		ldi r26,lo8(199)
+ 388 014a B0E0      		ldi r27,hi8(199)
+ 389 014c 1197      	1:	sbiw r26,1
+ 390 014e 01F4      		brne 1b
+ 391 0150 00C0      		rjmp .
+ 392 0152 0000      		nop
+ 393               	.LBE31:
+ 394               	.LBE30:
+ 110:libraries/fallblatt/fallblatt.c ****             SET_ADCM;
+ 395               		.loc 1 110 0
+ 396 0154 419A      		sbi 0x8,1
+ 111:libraries/fallblatt/fallblatt.c ****             _delay_us(100);
+ 397               		.loc 1 111 0
+ 398 0156 439A      		sbi 0x8,3
+ 399               	.LVL30:
+ 400               	.LBB32:
+ 401               	.LBB33:
+ 402               		.loc 2 245 0
+ 403 0158 E7EC      		ldi r30,lo8(199)
+ 404 015a F0E0      		ldi r31,hi8(199)
+ 405 015c 3197      	1:	sbiw r30,1
+ 406 015e 01F4      		brne 1b
+ 407 0160 00C0      		rjmp .
+ 408 0162 0000      		nop
+ 409               	.LBE33:
+ 410               	.LBE32:
+ 113:libraries/fallblatt/fallblatt.c ****             value[1] = READ_DATA1;
+ 411               		.loc 1 113 0
+ 412 0164 99B1      		in r25,0x9
+ 413 0166 9078      		andi r25,lo8(-128)
+ 414 0168 9983      		std Y+1,r25
+ 114:libraries/fallblatt/fallblatt.c ****             value[2] = READ_DATA2;
+ 415               		.loc 1 114 0
+ 416 016a 99B1      		in r25,0x9
+ 417 016c 9074      		andi r25,lo8(64)
+ 418 016e 9A83      		std Y+2,r25
+ 115:libraries/fallblatt/fallblatt.c ****             value[3] = READ_DATA3;
+ 419               		.loc 1 115 0
+ 420 0170 99B1      		in r25,0x9
+ 421 0172 9072      		andi r25,lo8(32)
+ 422 0174 9B83      		std Y+3,r25
+ 116:libraries/fallblatt/fallblatt.c ****             value[4] = READ_DATA4;
+ 423               		.loc 1 116 0
+ 424 0176 99B1      		in r25,0x9
+ 425 0178 9071      		andi r25,lo8(16)
+ 426 017a 9C83      		std Y+4,r25
+ 117:libraries/fallblatt/fallblatt.c ****             value[5] = READ_DATA5;
+ 427               		.loc 1 117 0
+ 428 017c 99B1      		in r25,0x9
+ 429 017e 9870      		andi r25,lo8(8)
+ 430 0180 9D83      		std Y+5,r25
+ 118:libraries/fallblatt/fallblatt.c ****             
+ 431               		.loc 1 118 0
+ 432 0182 99B1      		in r25,0x9
+ 433 0184 9470      		andi r25,lo8(4)
+ 434 0186 9E83      		std Y+6,r25
+ 435               	.LVL31:
+ 436 0188 FE01      		movw r30,r28
+ 437 018a 3196      		adiw r30,1
+ 438 018c C12C      		mov r12,__zero_reg__
+ 439 018e D12C      		mov r13,__zero_reg__
+ 440               	.LVL32:
+ 441               	.L25:
+ 442               	.LBB34:
+ 122:libraries/fallblatt/fallblatt.c ****                 else value[i] = 0;
+ 443               		.loc 1 122 0
+ 444 0190 5C2D      		mov r21,r12
+ 445 0192 7F01      		movw r14,r30
+ 446 0194 9081      		ld r25,Z
+ 447 0196 9111      		cpse r25,__zero_reg__
+ 448 0198 00C0      		rjmp .L23
+ 122:libraries/fallblatt/fallblatt.c ****                 else value[i] = 0;
+ 449               		.loc 1 122 0 is_stmt 0 discriminator 1
+ 450 019a 7083      		st Z,r23
+ 451 019c 00C0      		rjmp .L24
+ 452               	.L23:
+ 123:libraries/fallblatt/fallblatt.c ****                 number_m ^= (-value[i] ^ number_m) & (1 << i);
+ 453               		.loc 1 123 0 is_stmt 1
+ 454 019e 1082      		st Z,__zero_reg__
+ 455               	.L24:
+ 456 01a0 3196      		adiw r30,1
+ 124:libraries/fallblatt/fallblatt.c ****             }
+ 457               		.loc 1 124 0 discriminator 2
+ 458 01a2 D701      		movw r26,r14
+ 459 01a4 9C91      		ld r25,X
+ 460 01a6 9195      		neg r25
+ 461 01a8 9427      		eor r25,r20
+ 462 01aa 7801      		movw r14,r16
+ 463 01ac 00C0      		rjmp 2f
+ 464               		1:
+ 465 01ae EE0C      		lsl r14
+ 466               		2:
+ 467 01b0 5A95      		dec r21
+ 468 01b2 02F4      		brpl 1b
+ 469 01b4 9E21      		and r25,r14
+ 470 01b6 4927      		eor r20,r25
+ 471               	.LVL33:
+ 472 01b8 BFEF      		ldi r27,-1
+ 473 01ba CB1A      		sub r12,r27
+ 474 01bc DB0A      		sbc r13,r27
+ 475               	.LVL34:
+ 120:libraries/fallblatt/fallblatt.c ****             {
+ 476               		.loc 1 120 0 discriminator 2
+ 477 01be 96E0      		ldi r25,6
+ 478 01c0 C916      		cp r12,r25
+ 479 01c2 D104      		cpc r13,__zero_reg__
+ 480 01c4 01F4      		brne .L25
+ 481               	.LBE34:
+ 128:libraries/fallblatt/fallblatt.c ****             {
+ 482               		.loc 1 128 0
+ 483 01c6 4617      		cp r20,r22
+ 484 01c8 01F0      		breq .L26
+ 130:libraries/fallblatt/fallblatt.c ****                 _delay_us(100);
+ 485               		.loc 1 130 0
+ 486 01ca 409A      		sbi 0x8,0
+ 487               	.LVL35:
+ 488               	.LBB35:
+ 489               	.LBB36:
+ 490               		.loc 2 245 0
+ 491 01cc A7EC      		ldi r26,lo8(199)
+ 492 01ce B0E0      		ldi r27,hi8(199)
+ 493 01d0 1197      	1:	sbiw r26,1
+ 494 01d2 01F4      		brne 1b
+ 495 01d4 00C0      		rjmp .
+ 496 01d6 0000      		nop
+ 497               	.LBE36:
+ 498               	.LBE35:
+ 132:libraries/fallblatt/fallblatt.c ****                 _delay_us(100);
+ 499               		.loc 1 132 0
+ 500 01d8 4198      		cbi 0x8,1
+ 501               	.LVL36:
+ 502               	.LBB37:
+ 503               	.LBB38:
+ 504               		.loc 2 245 0
+ 505 01da E7EC      		ldi r30,lo8(199)
+ 506 01dc F0E0      		ldi r31,hi8(199)
+ 507 01de 3197      	1:	sbiw r30,1
+ 508 01e0 01F4      		brne 1b
+ 509 01e2 00C0      		rjmp .
+ 510 01e4 0000      		nop
+ 511               	.LBE38:
+ 512               	.LBE37:
+ 134:libraries/fallblatt/fallblatt.c ****                 RESET_START;
+ 513               		.loc 1 134 0
+ 514 01e6 4398      		cbi 0x8,3
+ 135:libraries/fallblatt/fallblatt.c ****             }
+ 515               		.loc 1 135 0
+ 516 01e8 4098      		cbi 0x8,0
+ 517 01ea 50E0      		ldi r21,0
+ 518 01ec 00C0      		rjmp .L27
+ 519               	.LVL37:
+ 520               	.L26:
+ 139:libraries/fallblatt/fallblatt.c ****                 RESET_ADCM;
+ 521               		.loc 1 139 0
+ 522 01ee 4198      		cbi 0x8,1
+ 140:libraries/fallblatt/fallblatt.c ****                 done_m = 1;
+ 523               		.loc 1 140 0
+ 524 01f0 4398      		cbi 0x8,3
+ 525               	.LVL38:
+ 526               		.loc 1 141 0
+ 527 01f2 51E0      		ldi r21,lo8(1)
+ 528               	.LVL39:
+ 529               	.L39:
+  66:libraries/fallblatt/fallblatt.c ****     {
+ 530               		.loc 1 66 0 discriminator 1
+ 531 01f4 2130      		cpi r18,lo8(1)
+ 532 01f6 01F0      		breq .+2
+ 533 01f8 00C0      		rjmp .L28
+ 142:libraries/fallblatt/fallblatt.c ****             }
+ 143:libraries/fallblatt/fallblatt.c ****         }
+ 144:libraries/fallblatt/fallblatt.c ****     }
+ 145:libraries/fallblatt/fallblatt.c ****     
+ 146:libraries/fallblatt/fallblatt.c ****     return 0;
+ 147:libraries/fallblatt/fallblatt.c **** }
+ 534               		.loc 1 147 0
+ 535 01fa 80E0      		ldi r24,0
+ 536               	.LVL40:
+ 537               	/* epilogue start */
+ 538 01fc 2696      		adiw r28,6
+ 539 01fe 0FB6      		in __tmp_reg__,__SREG__
+ 540 0200 F894      		cli
+ 541 0202 DEBF      		out __SP_H__,r29
+ 542 0204 0FBE      		out __SREG__,__tmp_reg__
+ 543 0206 CDBF      		out __SP_L__,r28
+ 544 0208 DF91      		pop r29
+ 545 020a CF91      		pop r28
+ 546 020c 1F91      		pop r17
+ 547 020e 0F91      		pop r16
+ 548 0210 FF90      		pop r15
+ 549 0212 EF90      		pop r14
+ 550 0214 DF90      		pop r13
+ 551 0216 CF90      		pop r12
+ 552 0218 0895      		ret
+ 553               		.cfi_endproc
+ 554               	.LFE9:
+ 556               	.Letext0:
+ 557               		.file 3 "/usr/lib/avr/include/stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 fallblatt.c
+     /tmp/cc8n77VY.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc8n77VY.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc8n77VY.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc8n77VY.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc8n77VY.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc8n77VY.s:12     .text:0000000000000000 USART_Transmit2
+     /tmp/cc8n77VY.s:35     .text:000000000000000e SendString2
+     /tmp/cc8n77VY.s:77     .text:0000000000000026 fallblatt_init
+     /tmp/cc8n77VY.s:123    .text:0000000000000048 set_positions
+
+NO UNDEFINED SYMBOLS

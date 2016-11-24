@@ -1,0 +1,1416 @@
+   1               		.file	"PCF8563.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	TWI_Init
+  12               	TWI_Init:
+  13               	.LFB0:
+  14               		.file 1 "libraries/pcf8563/PCF8563.c"
+   1:libraries/pcf8563/PCF8563.c **** /*
+   2:libraries/pcf8563/PCF8563.c ****  * PCF8563.c
+   3:libraries/pcf8563/PCF8563.c ****  *
+   4:libraries/pcf8563/PCF8563.c ****  * Created: 2014-11-18 20:00:32
+   5:libraries/pcf8563/PCF8563.c ****  *  Author: Jakub Pachciarek
+   6:libraries/pcf8563/PCF8563.c ****  *
+   7:libraries/pcf8563/PCF8563.c ****  * Not implemented:
+   8:libraries/pcf8563/PCF8563.c ****  * - TEST1, STOP, TESTC, TI_TP bits - can be accessed trough raw PCF_Write and PCF_Read
+   9:libraries/pcf8563/PCF8563.c ****  */ 
+  10:libraries/pcf8563/PCF8563.c **** 
+  11:libraries/pcf8563/PCF8563.c **** #include <avr/io.h>
+  12:libraries/pcf8563/PCF8563.c **** #include "PCF8563.h"
+  13:libraries/pcf8563/PCF8563.c **** 
+  14:libraries/pcf8563/PCF8563.c **** 
+  15:libraries/pcf8563/PCF8563.c **** //PHYSICAL LAYER
+  16:libraries/pcf8563/PCF8563.c **** 
+  17:libraries/pcf8563/PCF8563.c **** void TWI_Init()
+  18:libraries/pcf8563/PCF8563.c **** {
+  15               		.loc 1 18 0
+  16               		.cfi_startproc
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+  19:libraries/pcf8563/PCF8563.c **** 	//About 100kHz for 1.6MHz clock
+  20:libraries/pcf8563/PCF8563.c **** 	TWBR = 0;										//Set bitrate factor to 0
+  21               		.loc 1 20 0
+  22 0000 1092 B800 		sts 184,__zero_reg__
+  21:libraries/pcf8563/PCF8563.c **** 	TWSR &= ~((1<<TWPS1) | (1<<TWPS0));				//Set prescaler to 1
+  23               		.loc 1 21 0
+  24 0004 E9EB      		ldi r30,lo8(-71)
+  25 0006 F0E0      		ldi r31,0
+  26 0008 8081      		ld r24,Z
+  27 000a 8C7F      		andi r24,lo8(-4)
+  28 000c 8083      		st Z,r24
+  29 000e 0895      		ret
+  30               		.cfi_endproc
+  31               	.LFE0:
+  33               	.global	TWI_Start
+  35               	TWI_Start:
+  36               	.LFB1:
+  22:libraries/pcf8563/PCF8563.c **** }
+  23:libraries/pcf8563/PCF8563.c **** 
+  24:libraries/pcf8563/PCF8563.c **** void TWI_Start()
+  25:libraries/pcf8563/PCF8563.c **** {
+  37               		.loc 1 25 0
+  38               		.cfi_startproc
+  39               	/* prologue: function */
+  40               	/* frame size = 0 */
+  41               	/* stack size = 0 */
+  42               	.L__stack_usage = 0
+  26:libraries/pcf8563/PCF8563.c **** 	TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWSTA);
+  43               		.loc 1 26 0
+  44 0010 84EA      		ldi r24,lo8(-92)
+  45 0012 8093 BC00 		sts 188,r24
+  46               	.L3:
+  27:libraries/pcf8563/PCF8563.c **** 	while (!(TWCR & (1<<TWINT)));
+  47               		.loc 1 27 0 discriminator 1
+  48 0016 8091 BC00 		lds r24,188
+  49 001a 87FF      		sbrs r24,7
+  50 001c 00C0      		rjmp .L3
+  51               	/* epilogue start */
+  28:libraries/pcf8563/PCF8563.c **** }
+  52               		.loc 1 28 0
+  53 001e 0895      		ret
+  54               		.cfi_endproc
+  55               	.LFE1:
+  57               	.global	TWI_Stop
+  59               	TWI_Stop:
+  60               	.LFB2:
+  29:libraries/pcf8563/PCF8563.c **** 
+  30:libraries/pcf8563/PCF8563.c **** void TWI_Stop()
+  31:libraries/pcf8563/PCF8563.c **** {
+  61               		.loc 1 31 0
+  62               		.cfi_startproc
+  63               	/* prologue: function */
+  64               	/* frame size = 0 */
+  65               	/* stack size = 0 */
+  66               	.L__stack_usage = 0
+  32:libraries/pcf8563/PCF8563.c **** 	TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWSTO);
+  67               		.loc 1 32 0
+  68 0020 84E9      		ldi r24,lo8(-108)
+  69 0022 8093 BC00 		sts 188,r24
+  70               	.L7:
+  33:libraries/pcf8563/PCF8563.c **** 	while ((TWCR & (1<<TWSTO)));
+  71               		.loc 1 33 0 discriminator 1
+  72 0026 8091 BC00 		lds r24,188
+  73 002a 84FD      		sbrc r24,4
+  74 002c 00C0      		rjmp .L7
+  75               	/* epilogue start */
+  34:libraries/pcf8563/PCF8563.c **** }
+  76               		.loc 1 34 0
+  77 002e 0895      		ret
+  78               		.cfi_endproc
+  79               	.LFE2:
+  81               	.global	TWI_Read
+  83               	TWI_Read:
+  84               	.LFB3:
+  35:libraries/pcf8563/PCF8563.c **** 
+  36:libraries/pcf8563/PCF8563.c **** uint8_t TWI_Read(uint8_t ack)
+  37:libraries/pcf8563/PCF8563.c **** {
+  85               		.loc 1 37 0
+  86               		.cfi_startproc
+  87               	.LVL0:
+  88               	/* prologue: function */
+  89               	/* frame size = 0 */
+  90               	/* stack size = 0 */
+  91               	.L__stack_usage = 0
+  38:libraries/pcf8563/PCF8563.c **** 	TWCR = (1<<TWINT) | (1<<TWEN) | (((ack ? 1 : 0)<<TWEA));
+  92               		.loc 1 38 0
+  93 0030 8111      		cpse r24,__zero_reg__
+  94 0032 00C0      		rjmp .L12
+  95 0034 84E8      		ldi r24,lo8(-124)
+  96               	.LVL1:
+  97 0036 00C0      		rjmp .L10
+  98               	.LVL2:
+  99               	.L12:
+ 100 0038 84EC      		ldi r24,lo8(-60)
+ 101               	.LVL3:
+ 102               	.L10:
+ 103               		.loc 1 38 0 is_stmt 0 discriminator 4
+ 104 003a 8093 BC00 		sts 188,r24
+ 105               	.L11:
+  39:libraries/pcf8563/PCF8563.c **** 	while (!(TWCR & (1<<TWINT)));
+ 106               		.loc 1 39 0 is_stmt 1 discriminator 1
+ 107 003e 8091 BC00 		lds r24,188
+ 108 0042 87FF      		sbrs r24,7
+ 109 0044 00C0      		rjmp .L11
+  40:libraries/pcf8563/PCF8563.c **** 	return TWDR;
+ 110               		.loc 1 40 0
+ 111 0046 8091 BB00 		lds r24,187
+  41:libraries/pcf8563/PCF8563.c **** }
+ 112               		.loc 1 41 0
+ 113 004a 0895      		ret
+ 114               		.cfi_endproc
+ 115               	.LFE3:
+ 117               	.global	TWI_Write
+ 119               	TWI_Write:
+ 120               	.LFB4:
+  42:libraries/pcf8563/PCF8563.c **** 
+  43:libraries/pcf8563/PCF8563.c **** void TWI_Write(uint8_t byte)
+  44:libraries/pcf8563/PCF8563.c **** {
+ 121               		.loc 1 44 0
+ 122               		.cfi_startproc
+ 123               	.LVL4:
+ 124               	/* prologue: function */
+ 125               	/* frame size = 0 */
+ 126               	/* stack size = 0 */
+ 127               	.L__stack_usage = 0
+  45:libraries/pcf8563/PCF8563.c **** 	TWDR = byte;
+ 128               		.loc 1 45 0
+ 129 004c 8093 BB00 		sts 187,r24
+  46:libraries/pcf8563/PCF8563.c **** 	TWCR = (1<<TWINT) | (1<<TWEN);
+ 130               		.loc 1 46 0
+ 131 0050 84E8      		ldi r24,lo8(-124)
+ 132               	.LVL5:
+ 133 0052 8093 BC00 		sts 188,r24
+ 134               	.LVL6:
+ 135               	.L15:
+  47:libraries/pcf8563/PCF8563.c **** 	while (!(TWCR & (1<<TWINT)));
+ 136               		.loc 1 47 0 discriminator 1
+ 137 0056 8091 BC00 		lds r24,188
+ 138 005a 87FF      		sbrs r24,7
+ 139 005c 00C0      		rjmp .L15
+ 140               	/* epilogue start */
+  48:libraries/pcf8563/PCF8563.c **** }
+ 141               		.loc 1 48 0
+ 142 005e 0895      		ret
+ 143               		.cfi_endproc
+ 144               	.LFE4:
+ 146               	.global	PCF_Write
+ 148               	PCF_Write:
+ 149               	.LFB5:
+  49:libraries/pcf8563/PCF8563.c **** 
+  50:libraries/pcf8563/PCF8563.c **** 
+  51:libraries/pcf8563/PCF8563.c **** //COMMUNICATION LAYER
+  52:libraries/pcf8563/PCF8563.c **** 
+  53:libraries/pcf8563/PCF8563.c **** void PCF_Write(uint8_t addr, uint8_t *data, uint8_t count) {
+ 150               		.loc 1 53 0
+ 151               		.cfi_startproc
+ 152               	.LVL7:
+ 153 0060 0F93      		push r16
+ 154               	.LCFI0:
+ 155               		.cfi_def_cfa_offset 3
+ 156               		.cfi_offset 16, -2
+ 157 0062 1F93      		push r17
+ 158               	.LCFI1:
+ 159               		.cfi_def_cfa_offset 4
+ 160               		.cfi_offset 17, -3
+ 161 0064 CF93      		push r28
+ 162               	.LCFI2:
+ 163               		.cfi_def_cfa_offset 5
+ 164               		.cfi_offset 28, -4
+ 165 0066 DF93      		push r29
+ 166               	.LCFI3:
+ 167               		.cfi_def_cfa_offset 6
+ 168               		.cfi_offset 29, -5
+ 169               	/* prologue: function */
+ 170               	/* frame size = 0 */
+ 171               	/* stack size = 4 */
+ 172               	.L__stack_usage = 4
+ 173 0068 D82F      		mov r29,r24
+ 174 006a 8B01      		movw r16,r22
+ 175 006c C42F      		mov r28,r20
+  54:libraries/pcf8563/PCF8563.c **** 	TWI_Start();
+ 176               		.loc 1 54 0
+ 177 006e 0E94 0000 		call TWI_Start
+ 178               	.LVL8:
+  55:libraries/pcf8563/PCF8563.c **** 
+  56:libraries/pcf8563/PCF8563.c **** 	TWI_Write(PCF8563_WRITE_ADDR);
+ 179               		.loc 1 56 0
+ 180 0072 82EA      		ldi r24,lo8(-94)
+ 181 0074 0E94 0000 		call TWI_Write
+ 182               	.LVL9:
+  57:libraries/pcf8563/PCF8563.c **** 	TWI_Write(addr);
+ 183               		.loc 1 57 0
+ 184 0078 8D2F      		mov r24,r29
+ 185               	.LVL10:
+ 186               	.L20:
+  58:libraries/pcf8563/PCF8563.c **** 
+  59:libraries/pcf8563/PCF8563.c **** 	while (count) {
+  60:libraries/pcf8563/PCF8563.c **** 		count--;
+  61:libraries/pcf8563/PCF8563.c **** 
+  62:libraries/pcf8563/PCF8563.c **** 		TWI_Write(*data);
+ 187               		.loc 1 62 0
+ 188 007a 0E94 0000 		call TWI_Write
+ 189               	.LVL11:
+  59:libraries/pcf8563/PCF8563.c **** 		count--;
+ 190               		.loc 1 59 0
+ 191 007e CC23      		tst r28
+ 192 0080 01F0      		breq .L21
+  60:libraries/pcf8563/PCF8563.c **** 
+ 193               		.loc 1 60 0
+ 194 0082 C150      		subi r28,lo8(-(-1))
+ 195               	.LVL12:
+ 196               		.loc 1 62 0
+ 197 0084 F801      		movw r30,r16
+ 198 0086 8191      		ld r24,Z+
+ 199 0088 8F01      		movw r16,r30
+ 200               	.LVL13:
+ 201 008a 00C0      		rjmp .L20
+ 202               	.LVL14:
+ 203               	.L21:
+ 204               	/* epilogue start */
+  63:libraries/pcf8563/PCF8563.c **** 		data++;
+  64:libraries/pcf8563/PCF8563.c **** 	}
+  65:libraries/pcf8563/PCF8563.c **** 
+  66:libraries/pcf8563/PCF8563.c **** 	TWI_Stop();
+  67:libraries/pcf8563/PCF8563.c **** 
+  68:libraries/pcf8563/PCF8563.c **** }
+ 205               		.loc 1 68 0
+ 206 008c DF91      		pop r29
+ 207               	.LVL15:
+ 208 008e CF91      		pop r28
+ 209               	.LVL16:
+ 210 0090 1F91      		pop r17
+ 211 0092 0F91      		pop r16
+ 212               	.LVL17:
+  66:libraries/pcf8563/PCF8563.c **** 
+ 213               		.loc 1 66 0
+ 214 0094 0C94 0000 		jmp TWI_Stop
+ 215               	.LVL18:
+ 216               		.cfi_endproc
+ 217               	.LFE5:
+ 219               	.global	PCF_Read
+ 221               	PCF_Read:
+ 222               	.LFB6:
+  69:libraries/pcf8563/PCF8563.c **** 
+  70:libraries/pcf8563/PCF8563.c **** void PCF_Read(uint8_t addr, uint8_t *data, uint8_t count) {
+ 223               		.loc 1 70 0
+ 224               		.cfi_startproc
+ 225               	.LVL19:
+ 226 0098 0F93      		push r16
+ 227               	.LCFI4:
+ 228               		.cfi_def_cfa_offset 3
+ 229               		.cfi_offset 16, -2
+ 230 009a 1F93      		push r17
+ 231               	.LCFI5:
+ 232               		.cfi_def_cfa_offset 4
+ 233               		.cfi_offset 17, -3
+ 234 009c CF93      		push r28
+ 235               	.LCFI6:
+ 236               		.cfi_def_cfa_offset 5
+ 237               		.cfi_offset 28, -4
+ 238 009e DF93      		push r29
+ 239               	.LCFI7:
+ 240               		.cfi_def_cfa_offset 6
+ 241               		.cfi_offset 29, -5
+ 242               	/* prologue: function */
+ 243               	/* frame size = 0 */
+ 244               	/* stack size = 4 */
+ 245               	.L__stack_usage = 4
+ 246 00a0 D82F      		mov r29,r24
+ 247 00a2 8B01      		movw r16,r22
+ 248 00a4 C42F      		mov r28,r20
+  71:libraries/pcf8563/PCF8563.c **** 	TWI_Start();
+ 249               		.loc 1 71 0
+ 250 00a6 0E94 0000 		call TWI_Start
+ 251               	.LVL20:
+  72:libraries/pcf8563/PCF8563.c **** 
+  73:libraries/pcf8563/PCF8563.c **** 	TWI_Write(PCF8563_WRITE_ADDR);
+ 252               		.loc 1 73 0
+ 253 00aa 82EA      		ldi r24,lo8(-94)
+ 254 00ac 0E94 0000 		call TWI_Write
+ 255               	.LVL21:
+  74:libraries/pcf8563/PCF8563.c **** 	TWI_Write(addr);
+ 256               		.loc 1 74 0
+ 257 00b0 8D2F      		mov r24,r29
+ 258 00b2 0E94 0000 		call TWI_Write
+ 259               	.LVL22:
+  75:libraries/pcf8563/PCF8563.c **** 
+  76:libraries/pcf8563/PCF8563.c **** 	TWI_Stop();
+ 260               		.loc 1 76 0
+ 261 00b6 0E94 0000 		call TWI_Stop
+ 262               	.LVL23:
+  77:libraries/pcf8563/PCF8563.c **** 	TWI_Start();
+ 263               		.loc 1 77 0
+ 264 00ba 0E94 0000 		call TWI_Start
+ 265               	.LVL24:
+  78:libraries/pcf8563/PCF8563.c **** 
+  79:libraries/pcf8563/PCF8563.c **** 	TWI_Write(PCF8563_READ_ADDR);
+ 266               		.loc 1 79 0
+ 267 00be 83EA      		ldi r24,lo8(-93)
+ 268 00c0 0E94 0000 		call TWI_Write
+ 269               	.LVL25:
+ 270               	.L23:
+  80:libraries/pcf8563/PCF8563.c **** 
+  81:libraries/pcf8563/PCF8563.c **** 	while (count)
+ 271               		.loc 1 81 0
+ 272 00c4 CC23      		tst r28
+ 273 00c6 01F0      		breq .L25
+  82:libraries/pcf8563/PCF8563.c **** 	{
+  83:libraries/pcf8563/PCF8563.c **** 		count--;
+ 274               		.loc 1 83 0
+ 275 00c8 C150      		subi r28,lo8(-(-1))
+ 276               	.LVL26:
+  84:libraries/pcf8563/PCF8563.c **** 
+  85:libraries/pcf8563/PCF8563.c **** 		*data = TWI_Read(count);
+ 277               		.loc 1 85 0
+ 278 00ca 8C2F      		mov r24,r28
+ 279 00cc 0E94 0000 		call TWI_Read
+ 280               	.LVL27:
+ 281 00d0 F801      		movw r30,r16
+ 282 00d2 8193      		st Z+,r24
+ 283 00d4 8F01      		movw r16,r30
+ 284               	.LVL28:
+ 285 00d6 00C0      		rjmp .L23
+ 286               	.L25:
+ 287               	/* epilogue start */
+  86:libraries/pcf8563/PCF8563.c **** 		data++;
+  87:libraries/pcf8563/PCF8563.c **** 	}
+  88:libraries/pcf8563/PCF8563.c **** 
+  89:libraries/pcf8563/PCF8563.c **** 	TWI_Stop();
+  90:libraries/pcf8563/PCF8563.c **** 
+  91:libraries/pcf8563/PCF8563.c **** }
+ 288               		.loc 1 91 0
+ 289 00d8 DF91      		pop r29
+ 290               	.LVL29:
+ 291 00da CF91      		pop r28
+ 292               	.LVL30:
+ 293 00dc 1F91      		pop r17
+ 294 00de 0F91      		pop r16
+ 295               	.LVL31:
+  89:libraries/pcf8563/PCF8563.c **** 
+ 296               		.loc 1 89 0
+ 297 00e0 0C94 0000 		jmp TWI_Stop
+ 298               	.LVL32:
+ 299               		.cfi_endproc
+ 300               	.LFE6:
+ 302               	.global	PCF_Init
+ 304               	PCF_Init:
+ 305               	.LFB7:
+  92:libraries/pcf8563/PCF8563.c **** 
+  93:libraries/pcf8563/PCF8563.c **** 
+  94:libraries/pcf8563/PCF8563.c **** //APPLICATION LAYER
+  95:libraries/pcf8563/PCF8563.c **** 
+  96:libraries/pcf8563/PCF8563.c **** //0 - 99 binary to BCD code conversion
+  97:libraries/pcf8563/PCF8563.c **** #define BinToBCD(bin) ((((bin) / 10) << 4) + ((bin) % 10))
+  98:libraries/pcf8563/PCF8563.c **** 
+  99:libraries/pcf8563/PCF8563.c **** 
+ 100:libraries/pcf8563/PCF8563.c **** void PCF_Init(uint8_t mode)
+ 101:libraries/pcf8563/PCF8563.c **** {
+ 306               		.loc 1 101 0
+ 307               		.cfi_startproc
+ 308               	.LVL33:
+ 309 00e4 CF93      		push r28
+ 310               	.LCFI8:
+ 311               		.cfi_def_cfa_offset 3
+ 312               		.cfi_offset 28, -2
+ 313 00e6 DF93      		push r29
+ 314               	.LCFI9:
+ 315               		.cfi_def_cfa_offset 4
+ 316               		.cfi_offset 29, -3
+ 317 00e8 00D0      		rcall .
+ 318               	.LCFI10:
+ 319               		.cfi_def_cfa_offset 6
+ 320 00ea CDB7      		in r28,__SP_L__
+ 321 00ec DEB7      		in r29,__SP_H__
+ 322               	.LCFI11:
+ 323               		.cfi_def_cfa_register 28
+ 324               	/* prologue: function */
+ 325               	/* frame size = 2 */
+ 326               	/* stack size = 4 */
+ 327               	.L__stack_usage = 4
+ 328 00ee 8A83      		std Y+2,r24
+ 102:libraries/pcf8563/PCF8563.c **** 	TWI_Init();
+ 329               		.loc 1 102 0
+ 330 00f0 0E94 0000 		call TWI_Init
+ 331               	.LVL34:
+ 103:libraries/pcf8563/PCF8563.c **** 
+ 104:libraries/pcf8563/PCF8563.c **** 	uint8_t tmp = 0b00000000;
+ 332               		.loc 1 104 0
+ 333 00f4 1982      		std Y+1,__zero_reg__
+ 105:libraries/pcf8563/PCF8563.c **** 	PCF_Write(0x00, &tmp, 1);				//Control_status_1
+ 334               		.loc 1 105 0
+ 335 00f6 41E0      		ldi r20,lo8(1)
+ 336 00f8 BE01      		movw r22,r28
+ 337 00fa 6F5F      		subi r22,-1
+ 338 00fc 7F4F      		sbci r23,-1
+ 339 00fe 80E0      		ldi r24,0
+ 340 0100 0E94 0000 		call PCF_Write
+ 341               	.LVL35:
+ 106:libraries/pcf8563/PCF8563.c **** 
+ 107:libraries/pcf8563/PCF8563.c **** 	mode &= 0b00010011;						//Mask unnecessary bits
+ 342               		.loc 1 107 0
+ 343 0104 8A81      		ldd r24,Y+2
+ 344 0106 8371      		andi r24,lo8(19)
+ 345 0108 8A83      		std Y+2,r24
+ 108:libraries/pcf8563/PCF8563.c **** 	PCF_Write(0x01, &mode, 1);				//Control_status_2
+ 346               		.loc 1 108 0
+ 347 010a 41E0      		ldi r20,lo8(1)
+ 348 010c BE01      		movw r22,r28
+ 349 010e 6E5F      		subi r22,-2
+ 350 0110 7F4F      		sbci r23,-1
+ 351 0112 81E0      		ldi r24,lo8(1)
+ 352 0114 0E94 0000 		call PCF_Write
+ 353               	.LVL36:
+ 354               	/* epilogue start */
+ 109:libraries/pcf8563/PCF8563.c **** }
+ 355               		.loc 1 109 0
+ 356 0118 0F90      		pop __tmp_reg__
+ 357 011a 0F90      		pop __tmp_reg__
+ 358 011c DF91      		pop r29
+ 359 011e CF91      		pop r28
+ 360               	.LVL37:
+ 361 0120 0895      		ret
+ 362               		.cfi_endproc
+ 363               	.LFE7:
+ 365               	.global	PCF_GetAndClearFlags
+ 367               	PCF_GetAndClearFlags:
+ 368               	.LFB8:
+ 110:libraries/pcf8563/PCF8563.c **** 
+ 111:libraries/pcf8563/PCF8563.c **** uint8_t PCF_GetAndClearFlags()
+ 112:libraries/pcf8563/PCF8563.c **** {
+ 369               		.loc 1 112 0
+ 370               		.cfi_startproc
+ 371 0122 CF93      		push r28
+ 372               	.LCFI12:
+ 373               		.cfi_def_cfa_offset 3
+ 374               		.cfi_offset 28, -2
+ 375 0124 DF93      		push r29
+ 376               	.LCFI13:
+ 377               		.cfi_def_cfa_offset 4
+ 378               		.cfi_offset 29, -3
+ 379 0126 00D0      		rcall .
+ 380               	.LCFI14:
+ 381               		.cfi_def_cfa_offset 6
+ 382 0128 CDB7      		in r28,__SP_L__
+ 383 012a DEB7      		in r29,__SP_H__
+ 384               	.LCFI15:
+ 385               		.cfi_def_cfa_register 28
+ 386               	/* prologue: function */
+ 387               	/* frame size = 2 */
+ 388               	/* stack size = 4 */
+ 389               	.L__stack_usage = 4
+ 113:libraries/pcf8563/PCF8563.c **** 	uint8_t flags;
+ 114:libraries/pcf8563/PCF8563.c **** 	PCF_Read(0x01, &flags, 1);				//Control_status_2
+ 390               		.loc 1 114 0
+ 391 012c 41E0      		ldi r20,lo8(1)
+ 392 012e BE01      		movw r22,r28
+ 393 0130 6E5F      		subi r22,-2
+ 394 0132 7F4F      		sbci r23,-1
+ 395 0134 81E0      		ldi r24,lo8(1)
+ 396 0136 0E94 0000 		call PCF_Read
+ 397               	.LVL38:
+ 115:libraries/pcf8563/PCF8563.c **** 
+ 116:libraries/pcf8563/PCF8563.c **** 	uint8_t cleared = flags & 0b00010011;	//Mask only configuration bits
+ 398               		.loc 1 116 0
+ 399 013a 8A81      		ldd r24,Y+2
+ 400 013c 8371      		andi r24,lo8(19)
+ 401 013e 8983      		std Y+1,r24
+ 117:libraries/pcf8563/PCF8563.c **** 	PCF_Write(0x01, &cleared, 1);			//Control_status_2
+ 402               		.loc 1 117 0
+ 403 0140 41E0      		ldi r20,lo8(1)
+ 404 0142 BE01      		movw r22,r28
+ 405 0144 6F5F      		subi r22,-1
+ 406 0146 7F4F      		sbci r23,-1
+ 407 0148 81E0      		ldi r24,lo8(1)
+ 408 014a 0E94 0000 		call PCF_Write
+ 409               	.LVL39:
+ 118:libraries/pcf8563/PCF8563.c **** 
+ 119:libraries/pcf8563/PCF8563.c **** 	return flags & 0x0C;					//Mask unnecessary bits
+ 410               		.loc 1 119 0
+ 411 014e 8A81      		ldd r24,Y+2
+ 120:libraries/pcf8563/PCF8563.c **** }
+ 412               		.loc 1 120 0
+ 413 0150 8C70      		andi r24,lo8(12)
+ 414               	/* epilogue start */
+ 415 0152 0F90      		pop __tmp_reg__
+ 416 0154 0F90      		pop __tmp_reg__
+ 417 0156 DF91      		pop r29
+ 418 0158 CF91      		pop r28
+ 419 015a 0895      		ret
+ 420               		.cfi_endproc
+ 421               	.LFE8:
+ 423               	.global	PCF_SetClockOut
+ 425               	PCF_SetClockOut:
+ 426               	.LFB9:
+ 121:libraries/pcf8563/PCF8563.c **** 
+ 122:libraries/pcf8563/PCF8563.c **** void PCF_SetClockOut(uint8_t mode)
+ 123:libraries/pcf8563/PCF8563.c **** {
+ 427               		.loc 1 123 0
+ 428               		.cfi_startproc
+ 429               	.LVL40:
+ 430 015c CF93      		push r28
+ 431               	.LCFI16:
+ 432               		.cfi_def_cfa_offset 3
+ 433               		.cfi_offset 28, -2
+ 434 015e DF93      		push r29
+ 435               	.LCFI17:
+ 436               		.cfi_def_cfa_offset 4
+ 437               		.cfi_offset 29, -3
+ 438 0160 1F92      		push __zero_reg__
+ 439               	.LCFI18:
+ 440               		.cfi_def_cfa_offset 5
+ 441 0162 CDB7      		in r28,__SP_L__
+ 442 0164 DEB7      		in r29,__SP_H__
+ 443               	.LCFI19:
+ 444               		.cfi_def_cfa_register 28
+ 445               	/* prologue: function */
+ 446               	/* frame size = 1 */
+ 447               	/* stack size = 3 */
+ 448               	.L__stack_usage = 3
+ 124:libraries/pcf8563/PCF8563.c **** 	mode &= 0b10000011;
+ 449               		.loc 1 124 0
+ 450 0166 8378      		andi r24,lo8(-125)
+ 451               	.LVL41:
+ 452 0168 8983      		std Y+1,r24
+ 125:libraries/pcf8563/PCF8563.c **** 	PCF_Write(0x0D, &mode, 1);				//CLKOUT_control
+ 453               		.loc 1 125 0
+ 454 016a 41E0      		ldi r20,lo8(1)
+ 455 016c BE01      		movw r22,r28
+ 456 016e 6F5F      		subi r22,-1
+ 457 0170 7F4F      		sbci r23,-1
+ 458 0172 8DE0      		ldi r24,lo8(13)
+ 459 0174 0E94 0000 		call PCF_Write
+ 460               	.LVL42:
+ 461               	/* epilogue start */
+ 126:libraries/pcf8563/PCF8563.c **** }
+ 462               		.loc 1 126 0
+ 463 0178 0F90      		pop __tmp_reg__
+ 464 017a DF91      		pop r29
+ 465 017c CF91      		pop r28
+ 466 017e 0895      		ret
+ 467               		.cfi_endproc
+ 468               	.LFE9:
+ 470               	.global	PCF_SetTimer
+ 472               	PCF_SetTimer:
+ 473               	.LFB10:
+ 127:libraries/pcf8563/PCF8563.c **** 
+ 128:libraries/pcf8563/PCF8563.c **** void PCF_SetTimer(uint8_t mode, uint8_t count)
+ 129:libraries/pcf8563/PCF8563.c **** {
+ 474               		.loc 1 129 0
+ 475               		.cfi_startproc
+ 476               	.LVL43:
+ 477 0180 CF93      		push r28
+ 478               	.LCFI20:
+ 479               		.cfi_def_cfa_offset 3
+ 480               		.cfi_offset 28, -2
+ 481 0182 DF93      		push r29
+ 482               	.LCFI21:
+ 483               		.cfi_def_cfa_offset 4
+ 484               		.cfi_offset 29, -3
+ 485 0184 00D0      		rcall .
+ 486               	.LCFI22:
+ 487               		.cfi_def_cfa_offset 6
+ 488 0186 CDB7      		in r28,__SP_L__
+ 489 0188 DEB7      		in r29,__SP_H__
+ 490               	.LCFI23:
+ 491               		.cfi_def_cfa_register 28
+ 492               	/* prologue: function */
+ 493               	/* frame size = 2 */
+ 494               	/* stack size = 4 */
+ 495               	.L__stack_usage = 4
+ 496 018a 6A83      		std Y+2,r22
+ 130:libraries/pcf8563/PCF8563.c **** 	mode &= 0b10000011;
+ 497               		.loc 1 130 0
+ 498 018c 8378      		andi r24,lo8(-125)
+ 499               	.LVL44:
+ 500 018e 8983      		std Y+1,r24
+ 131:libraries/pcf8563/PCF8563.c **** 	PCF_Write(0x0E, &mode, 1);				//Timer_control
+ 501               		.loc 1 131 0
+ 502 0190 41E0      		ldi r20,lo8(1)
+ 503 0192 BE01      		movw r22,r28
+ 504               	.LVL45:
+ 505 0194 6F5F      		subi r22,-1
+ 506 0196 7F4F      		sbci r23,-1
+ 507 0198 8EE0      		ldi r24,lo8(14)
+ 508 019a 0E94 0000 		call PCF_Write
+ 509               	.LVL46:
+ 132:libraries/pcf8563/PCF8563.c **** 
+ 133:libraries/pcf8563/PCF8563.c **** 	PCF_Write(0x0F, &count, 1);				//Timer
+ 510               		.loc 1 133 0
+ 511 019e 41E0      		ldi r20,lo8(1)
+ 512 01a0 BE01      		movw r22,r28
+ 513 01a2 6E5F      		subi r22,-2
+ 514 01a4 7F4F      		sbci r23,-1
+ 515 01a6 8FE0      		ldi r24,lo8(15)
+ 516 01a8 0E94 0000 		call PCF_Write
+ 517               	.LVL47:
+ 518               	/* epilogue start */
+ 134:libraries/pcf8563/PCF8563.c **** }
+ 519               		.loc 1 134 0
+ 520 01ac 0F90      		pop __tmp_reg__
+ 521 01ae 0F90      		pop __tmp_reg__
+ 522 01b0 DF91      		pop r29
+ 523 01b2 CF91      		pop r28
+ 524               	.LVL48:
+ 525 01b4 0895      		ret
+ 526               		.cfi_endproc
+ 527               	.LFE10:
+ 529               	.global	PCF_GetTimer
+ 531               	PCF_GetTimer:
+ 532               	.LFB11:
+ 135:libraries/pcf8563/PCF8563.c **** 
+ 136:libraries/pcf8563/PCF8563.c **** uint8_t PCF_GetTimer()
+ 137:libraries/pcf8563/PCF8563.c **** {
+ 533               		.loc 1 137 0
+ 534               		.cfi_startproc
+ 535 01b6 CF93      		push r28
+ 536               	.LCFI24:
+ 537               		.cfi_def_cfa_offset 3
+ 538               		.cfi_offset 28, -2
+ 539 01b8 DF93      		push r29
+ 540               	.LCFI25:
+ 541               		.cfi_def_cfa_offset 4
+ 542               		.cfi_offset 29, -3
+ 543 01ba 1F92      		push __zero_reg__
+ 544               	.LCFI26:
+ 545               		.cfi_def_cfa_offset 5
+ 546 01bc CDB7      		in r28,__SP_L__
+ 547 01be DEB7      		in r29,__SP_H__
+ 548               	.LCFI27:
+ 549               		.cfi_def_cfa_register 28
+ 550               	/* prologue: function */
+ 551               	/* frame size = 1 */
+ 552               	/* stack size = 3 */
+ 553               	.L__stack_usage = 3
+ 138:libraries/pcf8563/PCF8563.c **** 	uint8_t count;
+ 139:libraries/pcf8563/PCF8563.c **** 	PCF_Read(0x0F, &count, 1);				//Timer
+ 554               		.loc 1 139 0
+ 555 01c0 41E0      		ldi r20,lo8(1)
+ 556 01c2 BE01      		movw r22,r28
+ 557 01c4 6F5F      		subi r22,-1
+ 558 01c6 7F4F      		sbci r23,-1
+ 559 01c8 8FE0      		ldi r24,lo8(15)
+ 560 01ca 0E94 0000 		call PCF_Read
+ 561               	.LVL49:
+ 140:libraries/pcf8563/PCF8563.c **** 
+ 141:libraries/pcf8563/PCF8563.c **** 	return count;
+ 142:libraries/pcf8563/PCF8563.c **** }
+ 562               		.loc 1 142 0
+ 563 01ce 8981      		ldd r24,Y+1
+ 564               	/* epilogue start */
+ 565 01d0 0F90      		pop __tmp_reg__
+ 566 01d2 DF91      		pop r29
+ 567 01d4 CF91      		pop r28
+ 568 01d6 0895      		ret
+ 569               		.cfi_endproc
+ 570               	.LFE11:
+ 572               	.global	PCF_SetAlarm
+ 574               	PCF_SetAlarm:
+ 575               	.LFB12:
+ 143:libraries/pcf8563/PCF8563.c **** 
+ 144:libraries/pcf8563/PCF8563.c **** uint8_t PCF_SetAlarm(PCF_Alarm *alarm)
+ 145:libraries/pcf8563/PCF8563.c **** {
+ 576               		.loc 1 145 0
+ 577               		.cfi_startproc
+ 578               	.LVL50:
+ 579 01d8 CF93      		push r28
+ 580               	.LCFI28:
+ 581               		.cfi_def_cfa_offset 3
+ 582               		.cfi_offset 28, -2
+ 583 01da DF93      		push r29
+ 584               	.LCFI29:
+ 585               		.cfi_def_cfa_offset 4
+ 586               		.cfi_offset 29, -3
+ 587 01dc 00D0      		rcall .
+ 588 01de 00D0      		rcall .
+ 589               	.LCFI30:
+ 590               		.cfi_def_cfa_offset 8
+ 591 01e0 CDB7      		in r28,__SP_L__
+ 592 01e2 DEB7      		in r29,__SP_H__
+ 593               	.LCFI31:
+ 594               		.cfi_def_cfa_register 28
+ 595               	/* prologue: function */
+ 596               	/* frame size = 4 */
+ 597               	/* stack size = 6 */
+ 598               	.L__stack_usage = 6
+ 599 01e4 FC01      		movw r30,r24
+ 146:libraries/pcf8563/PCF8563.c **** 	if ((alarm->minute >= 60 && alarm->minute != 80) || (alarm->hour >= 24 && alarm->hour != 80) || (a
+ 600               		.loc 1 146 0
+ 601 01e6 8081      		ld r24,Z
+ 602               	.LVL51:
+ 603 01e8 8C33      		cpi r24,lo8(60)
+ 604 01ea 00F0      		brlo .L32
+ 605               		.loc 1 146 0 is_stmt 0 discriminator 1
+ 606 01ec 8035      		cpi r24,lo8(80)
+ 607 01ee 01F0      		breq .+2
+ 608 01f0 00C0      		rjmp .L40
+ 609               	.L32:
+ 610               		.loc 1 146 0 discriminator 3
+ 611 01f2 5181      		ldd r21,Z+1
+ 612 01f4 5831      		cpi r21,lo8(24)
+ 613 01f6 00F0      		brlo .L34
+ 614               		.loc 1 146 0 discriminator 4
+ 615 01f8 5035      		cpi r21,lo8(80)
+ 616 01fa 01F4      		brne .L40
+ 617               	.L34:
+ 618               		.loc 1 146 0 discriminator 6
+ 619 01fc 4281      		ldd r20,Z+2
+ 620 01fe 4132      		cpi r20,lo8(33)
+ 621 0200 00F0      		brlo .L35
+ 622               		.loc 1 146 0 discriminator 7
+ 623 0202 4035      		cpi r20,lo8(80)
+ 624 0204 01F4      		brne .L40
+ 625               	.L35:
+ 626               		.loc 1 146 0 discriminator 9
+ 627 0206 3381      		ldd r19,Z+3
+ 628 0208 3730      		cpi r19,lo8(7)
+ 629 020a 00F0      		brlo .L36
+ 630               		.loc 1 146 0 discriminator 10
+ 631 020c 3035      		cpi r19,lo8(80)
+ 632 020e 01F4      		brne .L40
+ 633               	.L36:
+ 147:libraries/pcf8563/PCF8563.c **** 	{
+ 148:libraries/pcf8563/PCF8563.c **** 		return 1;
+ 149:libraries/pcf8563/PCF8563.c **** 	}
+ 150:libraries/pcf8563/PCF8563.c **** 
+ 151:libraries/pcf8563/PCF8563.c **** 	uint8_t buffer[4];
+ 152:libraries/pcf8563/PCF8563.c **** 
+ 153:libraries/pcf8563/PCF8563.c **** 	buffer[0] = BinToBCD(alarm->minute) & 0xFF;
+ 634               		.loc 1 153 0 is_stmt 1
+ 635 0210 2AE0      		ldi r18,lo8(10)
+ 636 0212 622F      		mov r22,r18
+ 637 0214 0E94 0000 		call __udivmodqi4
+ 638 0218 60E1      		ldi r22,lo8(16)
+ 639 021a 869F      		mul r24,r22
+ 640 021c 900D      		add r25,r0
+ 641 021e 1124      		clr __zero_reg__
+ 642 0220 9983      		std Y+1,r25
+ 154:libraries/pcf8563/PCF8563.c **** 	buffer[1] = BinToBCD(alarm->hour) & 0xBF;
+ 643               		.loc 1 154 0
+ 644 0222 852F      		mov r24,r21
+ 645 0224 622F      		mov r22,r18
+ 646 0226 0E94 0000 		call __udivmodqi4
+ 647 022a 50E1      		ldi r21,lo8(16)
+ 648 022c 859F      		mul r24,r21
+ 649 022e 900D      		add r25,r0
+ 650 0230 1124      		clr __zero_reg__
+ 651 0232 9F7B      		andi r25,lo8(-65)
+ 652 0234 9A83      		std Y+2,r25
+ 155:libraries/pcf8563/PCF8563.c **** 	buffer[2] = BinToBCD(alarm->day) & 0xBF;
+ 653               		.loc 1 155 0
+ 654 0236 842F      		mov r24,r20
+ 655 0238 0E94 0000 		call __udivmodqi4
+ 656 023c 60E1      		ldi r22,lo8(16)
+ 657 023e 869F      		mul r24,r22
+ 658 0240 900D      		add r25,r0
+ 659 0242 1124      		clr __zero_reg__
+ 660 0244 9F7B      		andi r25,lo8(-65)
+ 661 0246 9B83      		std Y+3,r25
+ 156:libraries/pcf8563/PCF8563.c **** 	buffer[3] = BinToBCD(alarm->weekday) & 0x87;
+ 662               		.loc 1 156 0
+ 663 0248 832F      		mov r24,r19
+ 664 024a 622F      		mov r22,r18
+ 665 024c 0E94 0000 		call __udivmodqi4
+ 666 0250 20E1      		ldi r18,lo8(16)
+ 667 0252 829F      		mul r24,r18
+ 668 0254 900D      		add r25,r0
+ 669 0256 1124      		clr __zero_reg__
+ 670 0258 9778      		andi r25,lo8(-121)
+ 671 025a 9C83      		std Y+4,r25
+ 157:libraries/pcf8563/PCF8563.c **** 
+ 158:libraries/pcf8563/PCF8563.c **** 	PCF_Write(0x09, buffer, sizeof(buffer));
+ 672               		.loc 1 158 0
+ 673 025c 44E0      		ldi r20,lo8(4)
+ 674 025e BE01      		movw r22,r28
+ 675 0260 6F5F      		subi r22,-1
+ 676 0262 7F4F      		sbci r23,-1
+ 677 0264 89E0      		ldi r24,lo8(9)
+ 678 0266 0E94 0000 		call PCF_Write
+ 679               	.LVL52:
+ 159:libraries/pcf8563/PCF8563.c **** 
+ 160:libraries/pcf8563/PCF8563.c **** 	return 0;
+ 680               		.loc 1 160 0
+ 681 026a 80E0      		ldi r24,0
+ 682 026c 00C0      		rjmp .L33
+ 683               	.LVL53:
+ 684               	.L40:
+ 148:libraries/pcf8563/PCF8563.c **** 	}
+ 685               		.loc 1 148 0
+ 686 026e 81E0      		ldi r24,lo8(1)
+ 687               	.LVL54:
+ 688               	.L33:
+ 689               	/* epilogue start */
+ 161:libraries/pcf8563/PCF8563.c **** }
+ 690               		.loc 1 161 0
+ 691 0270 0F90      		pop __tmp_reg__
+ 692 0272 0F90      		pop __tmp_reg__
+ 693 0274 0F90      		pop __tmp_reg__
+ 694 0276 0F90      		pop __tmp_reg__
+ 695 0278 DF91      		pop r29
+ 696 027a CF91      		pop r28
+ 697 027c 0895      		ret
+ 698               		.cfi_endproc
+ 699               	.LFE12:
+ 701               	.global	PCF_GetAlarm
+ 703               	PCF_GetAlarm:
+ 704               	.LFB13:
+ 162:libraries/pcf8563/PCF8563.c **** 
+ 163:libraries/pcf8563/PCF8563.c **** uint8_t PCF_GetAlarm(PCF_Alarm *alarm)
+ 164:libraries/pcf8563/PCF8563.c **** {
+ 705               		.loc 1 164 0
+ 706               		.cfi_startproc
+ 707               	.LVL55:
+ 708 027e 0F93      		push r16
+ 709               	.LCFI32:
+ 710               		.cfi_def_cfa_offset 3
+ 711               		.cfi_offset 16, -2
+ 712 0280 1F93      		push r17
+ 713               	.LCFI33:
+ 714               		.cfi_def_cfa_offset 4
+ 715               		.cfi_offset 17, -3
+ 716 0282 CF93      		push r28
+ 717               	.LCFI34:
+ 718               		.cfi_def_cfa_offset 5
+ 719               		.cfi_offset 28, -4
+ 720 0284 DF93      		push r29
+ 721               	.LCFI35:
+ 722               		.cfi_def_cfa_offset 6
+ 723               		.cfi_offset 29, -5
+ 724 0286 00D0      		rcall .
+ 725 0288 00D0      		rcall .
+ 726               	.LCFI36:
+ 727               		.cfi_def_cfa_offset 10
+ 728 028a CDB7      		in r28,__SP_L__
+ 729 028c DEB7      		in r29,__SP_H__
+ 730               	.LCFI37:
+ 731               		.cfi_def_cfa_register 28
+ 732               	/* prologue: function */
+ 733               	/* frame size = 4 */
+ 734               	/* stack size = 8 */
+ 735               	.L__stack_usage = 8
+ 736 028e 8C01      		movw r16,r24
+ 165:libraries/pcf8563/PCF8563.c **** 	uint8_t buffer[4];
+ 166:libraries/pcf8563/PCF8563.c **** 
+ 167:libraries/pcf8563/PCF8563.c **** 	PCF_Read(0x09, buffer, sizeof(buffer));
+ 737               		.loc 1 167 0
+ 738 0290 44E0      		ldi r20,lo8(4)
+ 739 0292 BE01      		movw r22,r28
+ 740 0294 6F5F      		subi r22,-1
+ 741 0296 7F4F      		sbci r23,-1
+ 742 0298 89E0      		ldi r24,lo8(9)
+ 743               	.LVL56:
+ 744 029a 0E94 0000 		call PCF_Read
+ 745               	.LVL57:
+ 168:libraries/pcf8563/PCF8563.c **** 
+ 169:libraries/pcf8563/PCF8563.c **** 	alarm->minute = (((buffer[0] >> 4) & 0x0F) * 10) + (buffer[0] & 0x0F);
+ 746               		.loc 1 169 0
+ 747 029e 8981      		ldd r24,Y+1
+ 748 02a0 982F      		mov r25,r24
+ 749 02a2 9295      		swap r25
+ 750 02a4 9F70      		andi r25,lo8(15)
+ 751 02a6 8F70      		andi r24,lo8(15)
+ 752 02a8 2AE0      		ldi r18,lo8(10)
+ 753 02aa 929F      		mul r25,r18
+ 754 02ac 800D      		add r24,r0
+ 755 02ae 1124      		clr __zero_reg__
+ 756 02b0 F801      		movw r30,r16
+ 757 02b2 8083      		st Z,r24
+ 170:libraries/pcf8563/PCF8563.c **** 	alarm->hour = (((buffer[1] >> 4) & 0x0B) * 10) + (buffer[1] & 0x0F);
+ 758               		.loc 1 170 0
+ 759 02b4 9A81      		ldd r25,Y+2
+ 760 02b6 892F      		mov r24,r25
+ 761 02b8 8695      		lsr r24
+ 762 02ba 8695      		lsr r24
+ 763 02bc 8695      		lsr r24
+ 764 02be 8671      		andi r24,lo8(22)
+ 765 02c0 282F      		mov r18,r24
+ 766 02c2 220F      		lsl r18
+ 767 02c4 220F      		lsl r18
+ 768 02c6 820F      		add r24,r18
+ 769 02c8 9F70      		andi r25,lo8(15)
+ 770 02ca 980F      		add r25,r24
+ 771 02cc 9183      		std Z+1,r25
+ 171:libraries/pcf8563/PCF8563.c **** 	alarm->day = (((buffer[2] >> 4) & 0x0B) * 10) + (buffer[2] & 0x0F);
+ 772               		.loc 1 171 0
+ 773 02ce 9B81      		ldd r25,Y+3
+ 774 02d0 892F      		mov r24,r25
+ 775 02d2 8695      		lsr r24
+ 776 02d4 8695      		lsr r24
+ 777 02d6 8695      		lsr r24
+ 778 02d8 8671      		andi r24,lo8(22)
+ 779 02da 282F      		mov r18,r24
+ 780 02dc 220F      		lsl r18
+ 781 02de 220F      		lsl r18
+ 782 02e0 820F      		add r24,r18
+ 783 02e2 9F70      		andi r25,lo8(15)
+ 784 02e4 980F      		add r25,r24
+ 785 02e6 9283      		std Z+2,r25
+ 172:libraries/pcf8563/PCF8563.c **** 	alarm->weekday = (((buffer[3] >> 4) & 0x08) * 10) + (buffer[3] & 0x07);
+ 786               		.loc 1 172 0
+ 787 02e8 9C81      		ldd r25,Y+4
+ 788 02ea 892F      		mov r24,r25
+ 789 02ec 8695      		lsr r24
+ 790 02ee 8695      		lsr r24
+ 791 02f0 8695      		lsr r24
+ 792 02f2 8071      		andi r24,lo8(16)
+ 793 02f4 282F      		mov r18,r24
+ 794 02f6 220F      		lsl r18
+ 795 02f8 220F      		lsl r18
+ 796 02fa 820F      		add r24,r18
+ 797 02fc 9770      		andi r25,lo8(7)
+ 798 02fe 980F      		add r25,r24
+ 799 0300 9383      		std Z+3,r25
+ 173:libraries/pcf8563/PCF8563.c **** 
+ 174:libraries/pcf8563/PCF8563.c **** 	return 0;
+ 175:libraries/pcf8563/PCF8563.c **** }
+ 800               		.loc 1 175 0
+ 801 0302 80E0      		ldi r24,0
+ 802               	/* epilogue start */
+ 803 0304 0F90      		pop __tmp_reg__
+ 804 0306 0F90      		pop __tmp_reg__
+ 805 0308 0F90      		pop __tmp_reg__
+ 806 030a 0F90      		pop __tmp_reg__
+ 807 030c DF91      		pop r29
+ 808 030e CF91      		pop r28
+ 809 0310 1F91      		pop r17
+ 810 0312 0F91      		pop r16
+ 811               	.LVL58:
+ 812 0314 0895      		ret
+ 813               		.cfi_endproc
+ 814               	.LFE13:
+ 816               	.global	PCF_SetDateTime
+ 818               	PCF_SetDateTime:
+ 819               	.LFB14:
+ 176:libraries/pcf8563/PCF8563.c **** 
+ 177:libraries/pcf8563/PCF8563.c **** uint8_t PCF_SetDateTime(PCF_DateTime *dateTime)
+ 178:libraries/pcf8563/PCF8563.c **** {
+ 820               		.loc 1 178 0
+ 821               		.cfi_startproc
+ 822               	.LVL59:
+ 823 0316 0F93      		push r16
+ 824               	.LCFI38:
+ 825               		.cfi_def_cfa_offset 3
+ 826               		.cfi_offset 16, -2
+ 827 0318 1F93      		push r17
+ 828               	.LCFI39:
+ 829               		.cfi_def_cfa_offset 4
+ 830               		.cfi_offset 17, -3
+ 831 031a CF93      		push r28
+ 832               	.LCFI40:
+ 833               		.cfi_def_cfa_offset 5
+ 834               		.cfi_offset 28, -4
+ 835 031c DF93      		push r29
+ 836               	.LCFI41:
+ 837               		.cfi_def_cfa_offset 6
+ 838               		.cfi_offset 29, -5
+ 839 031e CDB7      		in r28,__SP_L__
+ 840 0320 DEB7      		in r29,__SP_H__
+ 841               	.LCFI42:
+ 842               		.cfi_def_cfa_register 28
+ 843 0322 2797      		sbiw r28,7
+ 844               	.LCFI43:
+ 845               		.cfi_def_cfa_offset 13
+ 846 0324 0FB6      		in __tmp_reg__,__SREG__
+ 847 0326 F894      		cli
+ 848 0328 DEBF      		out __SP_H__,r29
+ 849 032a 0FBE      		out __SREG__,__tmp_reg__
+ 850 032c CDBF      		out __SP_L__,r28
+ 851               	/* prologue: function */
+ 852               	/* frame size = 7 */
+ 853               	/* stack size = 11 */
+ 854               	.L__stack_usage = 11
+ 855 032e FC01      		movw r30,r24
+ 179:libraries/pcf8563/PCF8563.c **** 	if (dateTime->second >= 60 || dateTime->minute >= 60 || dateTime->hour >= 24 || dateTime->day > 32
+ 856               		.loc 1 179 0
+ 857 0330 8081      		ld r24,Z
+ 858               	.LVL60:
+ 859 0332 8C33      		cpi r24,lo8(60)
+ 860 0334 00F0      		brlo .+2
+ 861 0336 00C0      		rjmp .L52
+ 862               		.loc 1 179 0 is_stmt 0 discriminator 1
+ 863 0338 0181      		ldd r16,Z+1
+ 864 033a 0C33      		cpi r16,lo8(60)
+ 865 033c 00F0      		brlo .+2
+ 866 033e 00C0      		rjmp .L52
+ 867               		.loc 1 179 0 discriminator 2
+ 868 0340 1281      		ldd r17,Z+2
+ 869 0342 1831      		cpi r17,lo8(24)
+ 870 0344 00F0      		brlo .+2
+ 871 0346 00C0      		rjmp .L52
+ 872               		.loc 1 179 0 discriminator 3
+ 873 0348 B381      		ldd r27,Z+3
+ 874 034a B132      		cpi r27,lo8(33)
+ 875 034c 00F0      		brlo .+2
+ 876 034e 00C0      		rjmp .L52
+ 877               		.loc 1 179 0 discriminator 4
+ 878 0350 A481      		ldd r26,Z+4
+ 879 0352 A730      		cpi r26,lo8(7)
+ 880 0354 00F0      		brlo .+2
+ 881 0356 00C0      		rjmp .L52
+ 882               		.loc 1 179 0 discriminator 5
+ 883 0358 3581      		ldd r19,Z+5
+ 884 035a 3D30      		cpi r19,lo8(13)
+ 885 035c 00F0      		brlo .+2
+ 886 035e 00C0      		rjmp .L52
+ 887               		.loc 1 179 0 discriminator 6
+ 888 0360 4681      		ldd r20,Z+6
+ 889 0362 5781      		ldd r21,Z+7
+ 890 0364 FA01      		movw r30,r20
+ 891               	.LVL61:
+ 892 0366 EC56      		subi r30,108
+ 893 0368 F740      		sbci r31,7
+ 894 036a E83C      		cpi r30,-56
+ 895 036c F105      		cpc r31,__zero_reg__
+ 896 036e 00F0      		brlo .+2
+ 897 0370 00C0      		rjmp .L52
+ 180:libraries/pcf8563/PCF8563.c **** 	{
+ 181:libraries/pcf8563/PCF8563.c **** 		return 1;
+ 182:libraries/pcf8563/PCF8563.c **** 	}
+ 183:libraries/pcf8563/PCF8563.c **** 
+ 184:libraries/pcf8563/PCF8563.c **** 	uint8_t buffer[7];
+ 185:libraries/pcf8563/PCF8563.c **** 
+ 186:libraries/pcf8563/PCF8563.c **** 	buffer[0] = BinToBCD(dateTime->second) & 0x7F;
+ 898               		.loc 1 186 0 is_stmt 1
+ 899 0372 2AE0      		ldi r18,lo8(10)
+ 900 0374 622F      		mov r22,r18
+ 901 0376 0E94 0000 		call __udivmodqi4
+ 902 037a 60E1      		ldi r22,lo8(16)
+ 903 037c 869F      		mul r24,r22
+ 904 037e 900D      		add r25,r0
+ 905 0380 1124      		clr __zero_reg__
+ 906 0382 9983      		std Y+1,r25
+ 187:libraries/pcf8563/PCF8563.c **** 	buffer[1] = BinToBCD(dateTime->minute) & 0x7F;
+ 907               		.loc 1 187 0
+ 908 0384 802F      		mov r24,r16
+ 909 0386 622F      		mov r22,r18
+ 910 0388 0E94 0000 		call __udivmodqi4
+ 911 038c 60E1      		ldi r22,lo8(16)
+ 912 038e 869F      		mul r24,r22
+ 913 0390 900D      		add r25,r0
+ 914 0392 1124      		clr __zero_reg__
+ 915 0394 9A83      		std Y+2,r25
+ 188:libraries/pcf8563/PCF8563.c **** 	buffer[2] = BinToBCD(dateTime->hour) & 0x3F;
+ 916               		.loc 1 188 0
+ 917 0396 812F      		mov r24,r17
+ 918 0398 622F      		mov r22,r18
+ 919 039a 0E94 0000 		call __udivmodqi4
+ 920 039e 60E1      		ldi r22,lo8(16)
+ 921 03a0 869F      		mul r24,r22
+ 922 03a2 900D      		add r25,r0
+ 923 03a4 1124      		clr __zero_reg__
+ 924 03a6 9B83      		std Y+3,r25
+ 189:libraries/pcf8563/PCF8563.c **** 	buffer[3] = BinToBCD(dateTime->day) & 0x3F;
+ 925               		.loc 1 189 0
+ 926 03a8 8B2F      		mov r24,r27
+ 927 03aa 622F      		mov r22,r18
+ 928 03ac 0E94 0000 		call __udivmodqi4
+ 929 03b0 60E1      		ldi r22,lo8(16)
+ 930 03b2 869F      		mul r24,r22
+ 931 03b4 900D      		add r25,r0
+ 932 03b6 1124      		clr __zero_reg__
+ 933 03b8 9C83      		std Y+4,r25
+ 190:libraries/pcf8563/PCF8563.c **** 	buffer[4] = BinToBCD(dateTime->weekday) & 0x07;
+ 934               		.loc 1 190 0
+ 935 03ba 8A2F      		mov r24,r26
+ 936 03bc 622F      		mov r22,r18
+ 937 03be 0E94 0000 		call __udivmodqi4
+ 938 03c2 9770      		andi r25,lo8(7)
+ 939 03c4 9D83      		std Y+5,r25
+ 191:libraries/pcf8563/PCF8563.c **** 	buffer[5] = BinToBCD(dateTime->month) & 0x1F;
+ 940               		.loc 1 191 0
+ 941 03c6 832F      		mov r24,r19
+ 942 03c8 0E94 0000 		call __udivmodqi4
+ 943 03cc 20E1      		ldi r18,lo8(16)
+ 944 03ce 829F      		mul r24,r18
+ 945 03d0 900D      		add r25,r0
+ 946 03d2 1124      		clr __zero_reg__
+ 947 03d4 9E83      		std Y+6,r25
+ 192:libraries/pcf8563/PCF8563.c **** 
+ 193:libraries/pcf8563/PCF8563.c **** 	if (dateTime->year >= 2000)
+ 948               		.loc 1 193 0
+ 949 03d6 403D      		cpi r20,-48
+ 950 03d8 67E0      		ldi r22,7
+ 951 03da 5607      		cpc r21,r22
+ 952 03dc 00F0      		brlo .L44
+ 194:libraries/pcf8563/PCF8563.c **** 	{
+ 195:libraries/pcf8563/PCF8563.c **** 		buffer[5] |= 0x80;
+ 953               		.loc 1 195 0
+ 954 03de 9068      		ori r25,lo8(-128)
+ 955 03e0 9E83      		std Y+6,r25
+ 196:libraries/pcf8563/PCF8563.c **** 		buffer[6] = BinToBCD(dateTime->year - 2000);
+ 956               		.loc 1 196 0
+ 957 03e2 CA01      		movw r24,r20
+ 958 03e4 805D      		subi r24,-48
+ 959 03e6 9740      		sbci r25,7
+ 960 03e8 6AE0      		ldi r22,lo8(10)
+ 961 03ea 70E0      		ldi r23,0
+ 962 03ec 0E94 0000 		call __udivmodhi4
+ 963 03f0 90E1      		ldi r25,lo8(16)
+ 964 03f2 699F      		mul r22,r25
+ 965 03f4 800D      		add r24,r0
+ 966 03f6 1124      		clr __zero_reg__
+ 967 03f8 00C0      		rjmp .L53
+ 968               	.L44:
+ 197:libraries/pcf8563/PCF8563.c **** 	}
+ 198:libraries/pcf8563/PCF8563.c **** 	else
+ 199:libraries/pcf8563/PCF8563.c **** 	{
+ 200:libraries/pcf8563/PCF8563.c **** 		buffer[6] = BinToBCD(dateTime->year - 1900);
+ 969               		.loc 1 200 0
+ 970 03fa CF01      		movw r24,r30
+ 971 03fc 6AE0      		ldi r22,lo8(10)
+ 972 03fe 70E0      		ldi r23,0
+ 973 0400 0E94 0000 		call __udivmodhi4
+ 974 0404 20E1      		ldi r18,lo8(16)
+ 975 0406 629F      		mul r22,r18
+ 976 0408 800D      		add r24,r0
+ 977 040a 1124      		clr __zero_reg__
+ 978               	.L53:
+ 979 040c 8F83      		std Y+7,r24
+ 201:libraries/pcf8563/PCF8563.c **** 	}
+ 202:libraries/pcf8563/PCF8563.c **** 
+ 203:libraries/pcf8563/PCF8563.c **** 	PCF_Write(0x02, buffer, sizeof(buffer));
+ 980               		.loc 1 203 0
+ 981 040e 47E0      		ldi r20,lo8(7)
+ 982 0410 BE01      		movw r22,r28
+ 983 0412 6F5F      		subi r22,-1
+ 984 0414 7F4F      		sbci r23,-1
+ 985 0416 82E0      		ldi r24,lo8(2)
+ 986 0418 0E94 0000 		call PCF_Write
+ 987               	.LVL62:
+ 204:libraries/pcf8563/PCF8563.c **** 
+ 205:libraries/pcf8563/PCF8563.c **** 	return 0;
+ 988               		.loc 1 205 0
+ 989 041c 80E0      		ldi r24,0
+ 990 041e 00C0      		rjmp .L43
+ 991               	.L52:
+ 181:libraries/pcf8563/PCF8563.c **** 	}
+ 992               		.loc 1 181 0
+ 993 0420 81E0      		ldi r24,lo8(1)
+ 994               	.L43:
+ 995               	/* epilogue start */
+ 206:libraries/pcf8563/PCF8563.c **** }
+ 996               		.loc 1 206 0
+ 997 0422 2796      		adiw r28,7
+ 998 0424 0FB6      		in __tmp_reg__,__SREG__
+ 999 0426 F894      		cli
+ 1000 0428 DEBF      		out __SP_H__,r29
+ 1001 042a 0FBE      		out __SREG__,__tmp_reg__
+ 1002 042c CDBF      		out __SP_L__,r28
+ 1003 042e DF91      		pop r29
+ 1004 0430 CF91      		pop r28
+ 1005 0432 1F91      		pop r17
+ 1006 0434 0F91      		pop r16
+ 1007 0436 0895      		ret
+ 1008               		.cfi_endproc
+ 1009               	.LFE14:
+ 1011               	.global	PCF_GetDateTime
+ 1013               	PCF_GetDateTime:
+ 1014               	.LFB15:
+ 207:libraries/pcf8563/PCF8563.c **** 
+ 208:libraries/pcf8563/PCF8563.c **** uint8_t PCF_GetDateTime(PCF_DateTime *dateTime)
+ 209:libraries/pcf8563/PCF8563.c **** {
+ 1015               		.loc 1 209 0
+ 1016               		.cfi_startproc
+ 1017               	.LVL63:
+ 1018 0438 0F93      		push r16
+ 1019               	.LCFI44:
+ 1020               		.cfi_def_cfa_offset 3
+ 1021               		.cfi_offset 16, -2
+ 1022 043a 1F93      		push r17
+ 1023               	.LCFI45:
+ 1024               		.cfi_def_cfa_offset 4
+ 1025               		.cfi_offset 17, -3
+ 1026 043c CF93      		push r28
+ 1027               	.LCFI46:
+ 1028               		.cfi_def_cfa_offset 5
+ 1029               		.cfi_offset 28, -4
+ 1030 043e DF93      		push r29
+ 1031               	.LCFI47:
+ 1032               		.cfi_def_cfa_offset 6
+ 1033               		.cfi_offset 29, -5
+ 1034 0440 CDB7      		in r28,__SP_L__
+ 1035 0442 DEB7      		in r29,__SP_H__
+ 1036               	.LCFI48:
+ 1037               		.cfi_def_cfa_register 28
+ 1038 0444 2797      		sbiw r28,7
+ 1039               	.LCFI49:
+ 1040               		.cfi_def_cfa_offset 13
+ 1041 0446 0FB6      		in __tmp_reg__,__SREG__
+ 1042 0448 F894      		cli
+ 1043 044a DEBF      		out __SP_H__,r29
+ 1044 044c 0FBE      		out __SREG__,__tmp_reg__
+ 1045 044e CDBF      		out __SP_L__,r28
+ 1046               	/* prologue: function */
+ 1047               	/* frame size = 7 */
+ 1048               	/* stack size = 11 */
+ 1049               	.L__stack_usage = 11
+ 1050 0450 8C01      		movw r16,r24
+ 210:libraries/pcf8563/PCF8563.c **** 	uint8_t buffer[7];
+ 211:libraries/pcf8563/PCF8563.c **** 
+ 212:libraries/pcf8563/PCF8563.c **** 	PCF_Read(0x02, buffer, sizeof(buffer));
+ 1051               		.loc 1 212 0
+ 1052 0452 47E0      		ldi r20,lo8(7)
+ 1053 0454 BE01      		movw r22,r28
+ 1054 0456 6F5F      		subi r22,-1
+ 1055 0458 7F4F      		sbci r23,-1
+ 1056 045a 82E0      		ldi r24,lo8(2)
+ 1057               	.LVL64:
+ 1058 045c 0E94 0000 		call PCF_Read
+ 1059               	.LVL65:
+ 213:libraries/pcf8563/PCF8563.c **** 
+ 214:libraries/pcf8563/PCF8563.c **** 	dateTime->second = (((buffer[0] >> 4) & 0x07) * 10) + (buffer[0] & 0x0F);
+ 1060               		.loc 1 214 0
+ 1061 0460 8981      		ldd r24,Y+1
+ 1062 0462 982F      		mov r25,r24
+ 1063 0464 9695      		lsr r25
+ 1064 0466 9695      		lsr r25
+ 1065 0468 9695      		lsr r25
+ 1066 046a 9E70      		andi r25,lo8(14)
+ 1067 046c 292F      		mov r18,r25
+ 1068 046e 220F      		lsl r18
+ 1069 0470 220F      		lsl r18
+ 1070 0472 920F      		add r25,r18
+ 1071 0474 282F      		mov r18,r24
+ 1072 0476 2F70      		andi r18,lo8(15)
+ 1073 0478 920F      		add r25,r18
+ 1074 047a F801      		movw r30,r16
+ 1075 047c 9083      		st Z,r25
+ 215:libraries/pcf8563/PCF8563.c **** 	dateTime->minute = (((buffer[1] >> 4) & 0x07) * 10) + (buffer[1] & 0x0F);
+ 1076               		.loc 1 215 0
+ 1077 047e 9A81      		ldd r25,Y+2
+ 1078 0480 292F      		mov r18,r25
+ 1079 0482 2695      		lsr r18
+ 1080 0484 2695      		lsr r18
+ 1081 0486 2695      		lsr r18
+ 1082 0488 2E70      		andi r18,lo8(14)
+ 1083 048a 322F      		mov r19,r18
+ 1084 048c 330F      		lsl r19
+ 1085 048e 330F      		lsl r19
+ 1086 0490 230F      		add r18,r19
+ 1087 0492 9F70      		andi r25,lo8(15)
+ 1088 0494 920F      		add r25,r18
+ 1089 0496 9183      		std Z+1,r25
+ 216:libraries/pcf8563/PCF8563.c **** 	dateTime->hour = (((buffer[2] >> 4) & 0x03) * 10) + (buffer[2] & 0x0F);
+ 1090               		.loc 1 216 0
+ 1091 0498 9B81      		ldd r25,Y+3
+ 1092 049a 292F      		mov r18,r25
+ 1093 049c 2695      		lsr r18
+ 1094 049e 2695      		lsr r18
+ 1095 04a0 2695      		lsr r18
+ 1096 04a2 2670      		andi r18,lo8(6)
+ 1097 04a4 322F      		mov r19,r18
+ 1098 04a6 330F      		lsl r19
+ 1099 04a8 330F      		lsl r19
+ 1100 04aa 230F      		add r18,r19
+ 1101 04ac 9F70      		andi r25,lo8(15)
+ 1102 04ae 920F      		add r25,r18
+ 1103 04b0 9283      		std Z+2,r25
+ 217:libraries/pcf8563/PCF8563.c **** 	dateTime->day = (((buffer[3] >> 4) & 0x03) * 10) + (buffer[3] & 0x0F);
+ 1104               		.loc 1 217 0
+ 1105 04b2 9C81      		ldd r25,Y+4
+ 1106 04b4 292F      		mov r18,r25
+ 1107 04b6 2695      		lsr r18
+ 1108 04b8 2695      		lsr r18
+ 1109 04ba 2695      		lsr r18
+ 1110 04bc 2670      		andi r18,lo8(6)
+ 1111 04be 322F      		mov r19,r18
+ 1112 04c0 330F      		lsl r19
+ 1113 04c2 330F      		lsl r19
+ 1114 04c4 230F      		add r18,r19
+ 1115 04c6 9F70      		andi r25,lo8(15)
+ 1116 04c8 920F      		add r25,r18
+ 1117 04ca 9383      		std Z+3,r25
+ 218:libraries/pcf8563/PCF8563.c **** 	dateTime->weekday = (buffer[4] & 0x07);
+ 1118               		.loc 1 218 0
+ 1119 04cc 9D81      		ldd r25,Y+5
+ 1120 04ce 9770      		andi r25,lo8(7)
+ 1121 04d0 9483      		std Z+4,r25
+ 219:libraries/pcf8563/PCF8563.c **** 	dateTime->month = ((buffer[5] >> 4) & 0x01) * 10 + (buffer[5] & 0x0F);
+ 1122               		.loc 1 219 0
+ 1123 04d2 4E81      		ldd r20,Y+6
+ 1124 04d4 44FB      		bst r20,4
+ 1125 04d6 9927      		clr r25
+ 1126 04d8 90F9      		bld r25,0
+ 1127 04da 990F      		lsl r25
+ 1128 04dc 292F      		mov r18,r25
+ 1129 04de 220F      		lsl r18
+ 1130 04e0 220F      		lsl r18
+ 1131 04e2 920F      		add r25,r18
+ 1132 04e4 242F      		mov r18,r20
+ 1133 04e6 2F70      		andi r18,lo8(15)
+ 1134 04e8 920F      		add r25,r18
+ 1135 04ea 9583      		std Z+5,r25
+ 220:libraries/pcf8563/PCF8563.c **** 	dateTime->year = 1900 + ((buffer[6] >> 4) & 0x0F) * 10 + (buffer[6] & 0x0F);
+ 1136               		.loc 1 220 0
+ 1137 04ec 9F81      		ldd r25,Y+7
+ 1138 04ee 292F      		mov r18,r25
+ 1139 04f0 2295      		swap r18
+ 1140 04f2 2F70      		andi r18,lo8(15)
+ 1141 04f4 FAE0      		ldi r31,lo8(10)
+ 1142 04f6 2F9F      		mul r18,r31
+ 1143 04f8 9001      		movw r18,r0
+ 1144 04fa 1124      		clr __zero_reg__
+ 1145 04fc 2459      		subi r18,-108
+ 1146 04fe 384F      		sbci r19,-8
+ 1147 0500 9F70      		andi r25,lo8(15)
+ 1148 0502 290F      		add r18,r25
+ 1149 0504 311D      		adc r19,__zero_reg__
+ 221:libraries/pcf8563/PCF8563.c **** 
+ 222:libraries/pcf8563/PCF8563.c **** 	if (buffer[5] &  0x80)
+ 1150               		.loc 1 222 0
+ 1151 0506 47FF      		sbrs r20,7
+ 1152 0508 00C0      		rjmp .L57
+ 223:libraries/pcf8563/PCF8563.c **** 	{
+ 224:libraries/pcf8563/PCF8563.c **** 		dateTime->year += 100;
+ 1153               		.loc 1 224 0
+ 1154 050a 2C59      		subi r18,-100
+ 1155 050c 3F4F      		sbci r19,-1
+ 1156               	.L57:
+ 1157 050e F801      		movw r30,r16
+ 1158 0510 3783      		std Z+7,r19
+ 1159 0512 2683      		std Z+6,r18
+ 225:libraries/pcf8563/PCF8563.c **** 	}
+ 226:libraries/pcf8563/PCF8563.c **** 
+ 227:libraries/pcf8563/PCF8563.c **** 	if (buffer[0] & 0x80) //Clock integrity not guaranted
+ 228:libraries/pcf8563/PCF8563.c **** 	{
+ 229:libraries/pcf8563/PCF8563.c **** 		return 1;
+ 230:libraries/pcf8563/PCF8563.c **** 	}
+ 231:libraries/pcf8563/PCF8563.c **** 
+ 232:libraries/pcf8563/PCF8563.c **** 	return 0;
+ 233:libraries/pcf8563/PCF8563.c **** }...
+ 1160               		.loc 1 233 0
+ 1161 0514 881F      		rol r24
+ 1162 0516 8827      		clr r24
+ 1163 0518 881F      		rol r24
+ 1164               	/* epilogue start */
+ 1165 051a 2796      		adiw r28,7
+ 1166 051c 0FB6      		in __tmp_reg__,__SREG__
+ 1167 051e F894      		cli
+ 1168 0520 DEBF      		out __SP_H__,r29
+ 1169 0522 0FBE      		out __SREG__,__tmp_reg__
+ 1170 0524 CDBF      		out __SP_L__,r28
+ 1171 0526 DF91      		pop r29
+ 1172 0528 CF91      		pop r28
+ 1173 052a 1F91      		pop r17
+ 1174 052c 0F91      		pop r16
+ 1175               	.LVL66:
+ 1176 052e 0895      		ret
+ 1177               		.cfi_endproc
+ 1178               	.LFE15:
+ 1180               	.Letext0:
+ 1181               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 1182               		.file 3 "libraries/pcf8563/PCF8563.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 PCF8563.c
+     /tmp/ccBw5Bkv.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccBw5Bkv.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccBw5Bkv.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccBw5Bkv.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccBw5Bkv.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccBw5Bkv.s:12     .text:0000000000000000 TWI_Init
+     /tmp/ccBw5Bkv.s:35     .text:0000000000000010 TWI_Start
+     /tmp/ccBw5Bkv.s:59     .text:0000000000000020 TWI_Stop
+     /tmp/ccBw5Bkv.s:83     .text:0000000000000030 TWI_Read
+     /tmp/ccBw5Bkv.s:119    .text:000000000000004c TWI_Write
+     /tmp/ccBw5Bkv.s:148    .text:0000000000000060 PCF_Write
+     /tmp/ccBw5Bkv.s:221    .text:0000000000000098 PCF_Read
+     /tmp/ccBw5Bkv.s:304    .text:00000000000000e4 PCF_Init
+     /tmp/ccBw5Bkv.s:367    .text:0000000000000122 PCF_GetAndClearFlags
+     /tmp/ccBw5Bkv.s:425    .text:000000000000015c PCF_SetClockOut
+     /tmp/ccBw5Bkv.s:472    .text:0000000000000180 PCF_SetTimer
+     /tmp/ccBw5Bkv.s:531    .text:00000000000001b6 PCF_GetTimer
+     /tmp/ccBw5Bkv.s:574    .text:00000000000001d8 PCF_SetAlarm
+     /tmp/ccBw5Bkv.s:703    .text:000000000000027e PCF_GetAlarm
+     /tmp/ccBw5Bkv.s:818    .text:0000000000000316 PCF_SetDateTime
+     /tmp/ccBw5Bkv.s:1013   .text:0000000000000438 PCF_GetDateTime
+
+UNDEFINED SYMBOLS
+__udivmodqi4
+__udivmodhi4

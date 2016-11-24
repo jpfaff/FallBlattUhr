@@ -1,0 +1,36 @@
+<html>
+    <body>
+        <form method="get">
+            SSID <input type="text" name="ssid"><br>
+            Password <input type="text" name="pw">
+            <br>
+            <br>
+            <input type="submit" value="Submit WiFi Settings">
+        </form>
+        <form method="get">
+        <input type="radio" name="how" value="man" checked> Manual
+        <input type="radio" name="how" value="ntp"> NTP<br><br>
+            <select name="h">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3" selected>3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>                
+            </select>.        
+            <select name="m">
+                <option value="0">00</option>
+                <option value="1">01</option>
+                <option value="2">02</option>
+                <option value="3">03</option>
+                <option value="4">04</option>
+                <option value="5" selected>05</option>                
+            </select>
+            <br><br>
+            <input type="checkbox" name="RTC" value="Y"> Start Clock
+            <br>
+            <br>
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>
